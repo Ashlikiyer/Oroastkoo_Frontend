@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/layout/button";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -10,8 +11,37 @@ import {
 
 import { Input } from "@/components/ui/layout/input";
 import { Label } from "@/components/ui/layout/label";
+import dataFetch from "@/services/data-services";
 
 const SignUp = () => {
+  const [username, setUsername] = useState(""); // Changed name to username
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const RegisteredUser = async () => {
+    const data = { username, email, password }; // Payload structure matches the backend
+    console.log("Payload sent to backend:", data); // Debugging log
+
+    const endpoint = "user/register";
+    const method = "POST";
+
+    try {
+      const response = await dataFetch<{ success: boolean; message: string }>(
+        endpoint,
+        method,
+        data
+      );
+      console.log("Server response:", response); // Debugging log
+
+      if (response.success) {
+        alert(response.message); // Notify the user
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Registration failed. Please check your details and try again.");
+    }
+  };
+
   return (
     <Card className="mx-auto mt-20 mb-20 max-w-sm">
       <CardHeader>
@@ -24,12 +54,21 @@ const SignUp = () => {
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Kier" required />
+            <Label htmlFor="username">Username</Label>
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              type="text"
+              id="username"
+              placeholder="Kier"
+              required
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               id="email"
               type="email"
               placeholder="m@example.com"
@@ -37,14 +76,18 @@ const SignUp = () => {
             />
           </div>
           <div className="grid gap-2">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-            </div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              id="password"
+              type="password"
+              placeholder="********"
+              required
+            />
           </div>
-
-          <Input id="password" type="password" required />
-          <Button type="submit" className="w-full">
-            Login
+          <Button onClick={RegisteredUser} type="button" className="w-full">
+            Register
           </Button>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}

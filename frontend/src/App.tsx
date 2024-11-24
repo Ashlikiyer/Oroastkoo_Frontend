@@ -9,6 +9,9 @@ import ProductAdmin from "./pages/Admin/ProductAdmin";
 import Category from "./pages/Admin/Category";
 import Orders from "./pages/Admin/Orders";
 import ProfileAdmin from "./pages/Admin/ProfileAdmin";
+import Checkout from "./pages/Payment/Checkout";
+import ProfileUser from "./pages/Profile/ProfileUser";
+import OrderHistory from "./pages/Payment/OrderHistory";
 
 const App = () => {
   return (
@@ -27,6 +30,10 @@ const App = () => {
         <Route path="Category" element={<Category />} />
         <Route path="Orders" element={<Orders />} />
         <Route path="ProfileAdmin" element={<ProfileAdmin />} />
+        <Route path="ProfileUser" element={<ProfileUser />} />
+        <Route path="Checkout" element={<Checkout/>} />
+        <Route path="OrderHistory" element={<OrderHistory/>} />
+        <Route path="ProfileUser" element={<ProfileUser/>} />
       </Routes>
     </BrowserRouter>
   );

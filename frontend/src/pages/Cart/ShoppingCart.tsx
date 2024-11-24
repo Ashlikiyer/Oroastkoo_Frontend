@@ -174,12 +174,12 @@ const ShoppingCart = () => {
                   </dl>
                 </div>
 
-                <a
-                  href="#"
+                <Link
+                  to="/Checkout"
                   className="flex w-full items-center justify-center rounded-lg bg-red-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none"
                 >
                   Proceed to Checkout
-                </a>
+                </Link>
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
                     or
