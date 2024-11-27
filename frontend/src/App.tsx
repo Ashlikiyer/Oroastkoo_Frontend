@@ -12,6 +12,8 @@ import ProfileAdmin from "./pages/Admin/ProfileAdmin";
 import Checkout from "./pages/Payment/Checkout";
 import ProfileUser from "./pages/Profile/ProfileUser";
 import OrderHistory from "./pages/Payment/OrderHistory";
+import AdminLogin from "./pages/Admin/AdminLogin";
+import AdminRegister from "./pages/Admin/AdminRegister";
 
 const App = () => {
   return (
@@ -34,6 +36,9 @@ const App = () => {
         <Route path="Checkout" element={<Checkout/>} />
         <Route path="OrderHistory" element={<OrderHistory/>} />
         <Route path="ProfileUser" element={<ProfileUser/>} />
+        <Route path="AdminLogin" element={<AdminLogin/>} />
+        <Route path="AdminRegister" element={<AdminRegister/>} />
+
       </Routes>
     </BrowserRouter>
   );

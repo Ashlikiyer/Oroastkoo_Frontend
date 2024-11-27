@@ -1,35 +1,76 @@
-// EditProduct.tsx
 import React, { useState, useEffect } from "react";
+import dataFetch from "@/services/data-services"; // Assuming this is your fetch service
 
 interface EditProductProps {
   toggleModal: () => void;
   productData: {
+    _id: string;
     name: string;
     category: string;
     price: number;
-    quantity: number;
-    dateAdded: string;
-    image?: File | null; // Optional image for edit mode
+    stock_quantity: number;
+    image?: File | null;
   };
+  onSave: (updatedProduct: {
+    _id: string;
+    name: string;
+    category: string;
+    price: number;
+    stock_quantity: number;
+    image: File | null;
+  }) => void;
 }
 
 const EditProduct: React.FC<EditProductProps> = ({
   toggleModal,
   productData,
+  onSave,
 }) => {
   const [productName, setProductName] = useState(productData.name);
   const [category, setCategory] = useState(productData.category);
   const [price, setPrice] = useState(productData.price);
-  const [quantity, setQuantity] = useState(productData.quantity);
+  const [quantity, setQuantity] = useState(productData.stock_quantity);
   const [image, setImage] = useState<File | null>(productData.image || null);
+  const [categories, setCategories] = useState<any[]>([]); // For fetched categories
 
   useEffect(() => {
     setProductName(productData.name);
     setCategory(productData.category);
     setPrice(productData.price);
-    setQuantity(productData.quantity);
+    setQuantity(productData.stock_quantity);
     setImage(productData.image || null);
   }, [productData]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const endPoint = "/admin/category/viewCategories";
+      const method = "GET";
+      const token = localStorage.getItem("adminToken");
+
+      if (!token) {
+        throw new Error("Unauthorized");
+      }
+
+      const response: { success: boolean; data: any[] } = await dataFetch(
+        endPoint,
+        method,
+        {},
+        token
+      );
+
+      if (response && response.success) {
+        setCategories(response.data);
+      } else {
+        console.error("Failed to fetch categories:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -39,9 +80,19 @@ const EditProduct: React.FC<EditProductProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ productName, category, price, quantity, image });
-    toggleModal();
+  
+    const updatedProduct = {
+      _id: productData._id,
+      name: productName,
+      stock_quantity: quantity,
+      category,
+      price,
+      image,
+    };
+  
+    onSave(updatedProduct);
   };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 p-4">
@@ -89,9 +140,11 @@ const EditProduct: React.FC<EditProductProps> = ({
                   required
                 >
                   <option value="">Choose a category</option>
-                  <option value="Breakfast">Breakfast</option>
-                  <option value="Lunch">Lunch</option>
-                  <option value="Dinner">Dinner</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.categoryName}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
