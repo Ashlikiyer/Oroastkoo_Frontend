@@ -37,6 +37,7 @@ const AdminRegister = () => {
       }
     } catch (error) {
       console.error("Error during registration:", error);
+      console.log(data)
       alert("Registration failed. Please check your details and try again.");
     }
   };

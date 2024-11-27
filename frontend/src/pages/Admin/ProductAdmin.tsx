@@ -183,7 +183,7 @@ const ProductAdmin = () => {
       </div>
 
       {/* Modals */}
-      {isModalOpen && <CreateProduct toggleModal={toggleModal} />}
+      {isModalOpen && <CreateProduct toggleModal={toggleModal} callback={fetchProducts} />}
       {isEditModalOpen && editProductData && (
         <EditProduct
           productData={editProductData}
