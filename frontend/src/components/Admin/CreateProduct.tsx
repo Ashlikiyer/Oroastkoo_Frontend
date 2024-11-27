@@ -3,9 +3,10 @@
 
   interface CreateProductProps {
     toggleModal: () => void;
+    callback: () => void;
   }
 
-  const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal }) => {
+  const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) => {
     const [name, setName] = useState<string>("");
     const [price, setPrice] = useState<number>(0);
     const [stock_quantity, setStock] = useState<number>(0);
@@ -54,7 +55,7 @@
         e.preventDefault();
 
         const category = "672fddf7130132d09a332946";
-        const image = "image.png"; // Default category ID
+        const image = "http://localhost:5000/uploads/1732726691765-498313938.jpg"; // Default category ID
 
         // Simulate form submission logic
         const payload = {
@@ -84,7 +85,16 @@
           setSuccessMessage(null); // Clear success message
           handleClose(); // Close the modal
         }, 2000);
-      } catch (error) {}
+        handleClose();
+        toggleCallback();
+      } catch (error) {
+        console.error("Error creating product:", error);
+        setSuccessMessage("Error creating product. Please try again.");
+      }
+    };
+
+    const toggleCallback = () => {
+      callback();
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
