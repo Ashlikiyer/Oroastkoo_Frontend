@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BreadCrumbs from "@/components/ui/BreadCrumbs";
 import Popup from "@/components/Dashboard/Popup";
 import Footer from "@/components/ui/Footer";
@@ -11,12 +11,50 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import dataFetch from "@/services/data-services";
+
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  stock_quantity: number;
+}
 
 const Home = () => {
   const [isPopupVisible, setPopupVisible] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const token = localStorage.getItem("adminToken");
+
+  useEffect(() => {
+    fetchProducts();
+  } , []);
+
   const togglePopup = () => {
     setPopupVisible(!isPopupVisible);
   };
+
+  const fetchProducts = async () => {
+    try {
+      const endpoint = "/admin/products/products";
+      if(!token) {
+        throw new Error("Token not found");
+      }
+
+      const method = "GET";
+
+      const response = await dataFetch(endpoint, method, {}, token);
+      if (response && typeof response === "object" && "data" in response) {
+        setProducts(response.data as Product[]);
+      } else {
+        throw new Error("Invalid response format");
+      }
+
+      console.log(response);
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="home-container">
@@ -80,61 +118,30 @@ const Home = () => {
             <CarouselPrevious className="absolute left-[-20px] top-1/2 transform -translate-y-1/2 z-10" />
             <CarouselNext className="absolute right-[-20px] top-1/2 transform -translate-y-1/2 z-10" />
             <CarouselContent>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+            {products.map((product) => (
+                <CarouselItem key={product._id} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-4">
                     <Card className="shadow-lg transform transition duration-500 hover:scale-105">
                       <div className="relative h-48 w-full rounded-t-lg overflow-hidden bg-gray-100">
                         <img
-                          src={`src/images/product-${index + 1}.png`}
-                          alt={`Product ${index + 1}`}
+                          src={`src/images/default-product.png`} 
+                          alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <CardContent className="p-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          Product {index + 1}
+                          {product.name}
                         </h3>
                         <p className="text-gray-500 dark:text-gray-400">
-                          Short product description goes here.
+                          Price: ${product.price}
                         </p>
-                        {/* Added Content */}
-                        <ul className="mt-3 flex items-center gap-2">
-                          <li className="flex items-center gap-1">
-                            <svg
-                              className="h-4 w-4 text-green-500"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                            >
-                              <path d="M5 13l4 4L19 7" />
-                            </svg>
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                              Fast Delivery
-                            </p>
-                          </li>
-                          <li className="flex items-center gap-1">
-                            <svg
-                              className="h-4 w-4 text-yellow-500"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.17 5.82 22l1.18-7.86-5-4.87 6.91-1.01L12 2z" />
-                            </svg>
-                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                              Best Quality
-                            </p>
-                          </li>
-                        </ul>
-                        {/* End Added Content */}
+                        <p className="text-gray-500 dark:text-gray-400">
+                          Stock: {product.stock_quantity}
+                        </p>
                         <div className="mt-4 flex items-center justify-between">
                           <p className="text-xl font-bold text-gray-900 dark:text-white">
-                            $1,499
+                            ${product.price}
                           </p>
                           <button
                             type="button"
@@ -149,6 +156,7 @@ const Home = () => {
                   </div>
                 </CarouselItem>
               ))}
+
             </CarouselContent>
           </Carousel>
         </div>

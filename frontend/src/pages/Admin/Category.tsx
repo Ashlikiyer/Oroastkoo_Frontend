@@ -1,15 +1,25 @@
+
 // Category.tsx
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
 import CreateCategory from "@/components/Admin/CreateCategory";
 import EditCategory from "@/components/Admin/EditCategory"; // Using EditCategory as per your current setup
 import DeleteProduct from "@/components/Admin/DeleteProduct";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import dataFetch from "@/services/data-services";
+
+interface CategoryData {
+  _id: string;
+  categoryName: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const Category = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
 
   const toggleCategoryModal = () => {
     setIsCategoryModalOpen(!isCategoryModalOpen);
@@ -20,6 +30,29 @@ const Category = () => {
   const toggleDeleteModal = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }
+  , []); // Empty dependency array to run once on mount
+
+  const fetchCategories = async () => {
+    try {
+      const endpoint = "/admin/category/viewCategories";
+      const token = localStorage.getItem("adminToken");
+      if (!token) throw new Error("Token not found");
+      const method = "GET";
+      const response = await dataFetch(endpoint, method, {}, token);
+
+      if (response && typeof response === "object" && "data" in response) {
+        setCategoryData(response.data as CategoryData[]);
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div className="flex">
@@ -68,19 +101,25 @@ const Category = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  <tr className="hover:bg-gray-50 transition duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Breakfast</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">29/02/2009</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button onClick={toggleEditCategoryModal} className="text-black-500 hover:text-green-700 mx-2">
-                        <img src="src/images/icons8-edit.svg" alt="Edit" />
-                      </button>
-                      <button onClick={toggleDeleteModal} className="ml-2 text-red-500 hover:text-red-700">
-                        <img src="src/images/icons8-delete.svg" alt="Delete" />
-                      </button>
-                    </td>
-                  </tr>
+                  {categoryData.map((category, index) => (
+                    <tr key={category._id} className="hover:bg-gray-50 transition duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {category.categoryName}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        {new Date(category.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <button onClick={toggleEditCategoryModal} className="text-black-500 hover:text-green-700 mx-2">
+                          <img src="src/images/icons8-edit.svg" alt="Edit" />
+                        </button>
+                        <button onClick={toggleDeleteModal} className="ml-2 text-red-500 hover:text-red-700">
+                          <img src="src/images/icons8-delete.svg" alt="Delete" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -93,7 +132,7 @@ const Category = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-black bg-opacity-50 absolute inset-0" onClick={toggleCategoryModal}></div>
           <div className="relative z-10">
-            <CreateCategory toggleModal={toggleCategoryModal} />
+            <CreateCategory callback={fetchCategories} toggleModal={toggleCategoryModal}  />
             <button
               className="absolute top-2 right-2 bg-gray-200 rounded-full p-1 text-gray-700 hover:bg-gray-300"
               onClick={toggleCategoryModal}

@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import { useState } from "react";
 import DeleteProduct from "@/components/Admin/DeleteProduct";
 
-const Orders = () => {
+const Orders = () => {    
   const [isDeleteOrderModalOpen, setIsDeleteOrderModalOpen] = useState(false);
 
   const toggleDeleteOrderModal = () => {
