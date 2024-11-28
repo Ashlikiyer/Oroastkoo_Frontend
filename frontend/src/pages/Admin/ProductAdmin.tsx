@@ -6,13 +6,17 @@ import DeleteProduct from "@/components/Admin/DeleteProduct";
 import { useEffect, useState } from "react";
 import dataFetch from "@/services/data-services";
 
+interface Category {
+  _id: string;
+  categoryName: string;
+}
+
 interface ProductData {
   _id: string;
   name: string;
-  category: string;
   price: number;
-  stock_quantity: number;
-  dateAdded?: string;
+  image_url?: string; // Optional image URL field
+  category: Category
 }
 
 const ProductAdmin = () => {
@@ -25,6 +29,8 @@ const ProductAdmin = () => {
   const [products, setProducts] = useState<ProductData[]>([]);
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uniqueCategories, setUniqueCategories] = useState<Set<string>>(new Set());
+
 
   // Toggle modals
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -42,13 +48,21 @@ const ProductAdmin = () => {
     setLoading(true);
     try {
       const response = await dataFetch("/admin/products/products", "GET", {}, getToken());
-      setProducts((response as { data: ProductData[] }).data);
+      const productsData = (response as { data: ProductData[] }).data;
+      setProducts(productsData);
+  
+      // Extract unique categories from products
+      const categorySet = new Set(productsData.map(product => product.category?.categoryName).filter(Boolean));
+      setUniqueCategories(categorySet);
+  
+      console.log(response);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Get token for API requests
   const getToken = () => {
@@ -73,6 +87,7 @@ const ProductAdmin = () => {
             product._id === updatedProduct._id ? (response as { data: ProductData }).data : product
           )
         );
+        fetchProducts();
       } else {
         console.error("Failed to update product:", response);
       }
@@ -127,14 +142,11 @@ const ProductAdmin = () => {
                 <p className="text-2xl font-bold">{products.length}</p>
               </div>
               <div className="bg-yellow-500 text-white rounded-lg p-4 shadow-lg">
-                <h2 className="text-xl font-semibold">Out of Stock</h2>
-                <p className="text-2xl font-bold">{products.filter(p => p.stock_quantity === 0).length}</p>
-              </div>
-              <div className="bg-yellow-500 text-white rounded-lg p-4 shadow-lg">
                 <h2 className="text-xl font-semibold">Categories</h2>
-                <p className="text-2xl font-bold">1</p>
+                <p className="text-2xl font-bold">{uniqueCategories.size}</p>
               </div>
             </div>
+
 
             {/* Product Table */}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -148,8 +160,6 @@ const ProductAdmin = () => {
                       <th className="px-6 py-3 text-left">Product Name</th>
                       <th className="px-6 py-3 text-left">Category</th>
                       <th className="px-6 py-3 text-left">Price</th>
-                      <th className="px-6 py-3 text-left">Quantity</th>
-                      <th className="px-6 py-3 text-left">Date Added</th>
                       <th className="px-6 py-3 text-center">Actions</th>
                     </tr>
                   </thead>
@@ -159,10 +169,8 @@ const ProductAdmin = () => {
                         <tr key={product._id} className="hover:bg-gray-50 transition">
                           <td className="px-6 py-4">{index + 1}</td>
                           <td className="px-6 py-4">{product.name}</td>
-                          <td className="px-6 py-4">{product.category}</td>
+                          <td className="px-6 py-4">{product.category?.categoryName || "Category"}</td>
                           <td className="px-6 py-4">₱{product.price.toFixed(2)}</td>
-                          <td className="px-6 py-4">{product.stock_quantity}</td>
-                          <td className="px-6 py-4">{product.dateAdded || "N/A"}</td>
                           <td className="px-6 py-4 text-center">
                             <button onClick={() => toggleEditModal(product)} className="text-green-500">Edit</button>
                             <button onClick={() => toggleDeleteModal(product._id)} className="text-red-500 ml-2">Delete</button>

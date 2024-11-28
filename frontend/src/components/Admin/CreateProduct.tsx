@@ -1,6 +1,7 @@
 import dataFetch from "@/services/data-services";
 import React, { useEffect, useState } from "react";
 
+<<<<<<< HEAD
 interface CreateProductProps {
   toggleModal: () => void;
   callback: () => void;
@@ -15,6 +16,22 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [product, setProduct] = useState<any>([]);
   const [categories, setCategories] = useState<any>([]);
+=======
+  interface CreateProductProps {
+    toggleModal: () => void;
+    callback: () => void;
+  }
+
+  const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) => {
+    const [name, setName] = useState<string>("");
+    const [price, setPrice] = useState<number>(0);
+    const [stock_quantity, setStock] = useState<number>(0);
+    const [image, setImage] = useState<File | null>(null);
+    const [category, setCategory] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [product, setProduct] = useState<any>([]);
+    const [categories, setCategories] = useState<any>([]);
+>>>>>>> b4367993c4761113962d25e84ec3269f7b8befbb
 
   useEffect(() => {
     fetchCategories();
@@ -37,12 +54,61 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
       );
       console.log("Categories:", response);
 
+<<<<<<< HEAD
       // Extract the data array
       if (response && response.success) {
         setCategories(response.data);
       } else {
         console.error("Unexpected response format:", response);
         setCategories([]); // Default to an empty array if no valid data
+=======
+        const category = "672fddf7130132d09a332946";
+        const image = "http://localhost:5000/uploads/1732726691765-498313938.jpg"; // Default category ID
+
+        // Simulate form submission logic
+        const payload = {
+          name,
+          category,
+          price,
+          stock_quantity,
+          image,
+        };
+
+        console.log("Payload:", payload);
+        const endPoint = "/admin/products/addproducts";
+        const method = "POST";
+        const token = localStorage.getItem("adminToken");
+        console.log("Token:", token);
+        if (!token) {
+          throw new Error("Unauthorized");  
+        }
+
+        const response = await dataFetch(endPoint, method, payload, token);
+        setProduct(response);
+        // Display success message
+        setSuccessMessage("Product successfully created!");
+
+        // Reset form and close modal after a short delay
+        setTimeout(() => {
+          setSuccessMessage(null); // Clear success message
+          handleClose(); // Close the modal
+        }, 2000);
+        handleClose();
+        toggleCallback();
+      } catch (error) {
+        console.error("Error creating product:", error);
+        setSuccessMessage("Error creating product. Please try again.");
+      }
+    };
+
+    const toggleCallback = () => {
+      callback();
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+        setImage(e.target.files[0]);
+>>>>>>> b4367993c4761113962d25e84ec3269f7b8befbb
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
