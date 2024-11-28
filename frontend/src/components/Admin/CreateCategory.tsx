@@ -1,38 +1,18 @@
-import dataFetch from "@/services/data-services";
 import React, { useState } from "react";
 
 // Define the props type for the component
 interface CreateCategoryProps {
   toggleModal: () => void; // Explicitly define the type of toggleModal
-  callback: () => void; // callback function to update the category list
 }
 
-const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }) => {
+const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal }) => {
   const [categoryName, setCategoryName] = useState<string>("");
 
-  // Function to handle form submission
-  const CreateCategory = async (event: React.FormEvent) => {
-    event.preventDefault();
-    try {
-      const endpoint = "/admin/category/addCategory";
-      const token = localStorage.getItem("adminToken");
-      if (!token) throw new Error("Token not found");
-      const method = "POST";
-      const response = await dataFetch(endpoint, method, { categoryName: categoryName }, token);
-      console.log(response);
-      handleCallback();
-      handleClose(); // Call the callback function to update the category list
-    }
-    catch (error) {
-      console.error(error);
-    }
-  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ categoryName });
+    handleClose();
   };
-
-  const handleCallback = () => {
-    callback(); // Call the callback function to update the category list
-  };
-    
 
   // Function to close the modal and reset the form
   const handleClose = () => {
@@ -57,7 +37,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }
         </button>
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Add new category</h3>
 
-        <form onSubmit={CreateCategory}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Category name
