@@ -4,13 +4,17 @@ import Popup from "@/components/Dashboard/Popup";
 import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import dataFetch from "@/services/data-services";
+interface Category {
+  _id: string;
+  categoryName: string;
+}
 
 interface Product {
   _id: string;
   name: string;
   price: number;
-  stock_quantity: number;
   image_url?: string; // Optional image URL field
+  category: Category
 }
 
 const Product = () => {
@@ -91,9 +95,6 @@ const Product = () => {
                 <h2 className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                   {product.name}
                 </h2>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  {`Stock: ${product.stock_quantity}`}
-                </p>
                 <div className="mt-3 flex items-center justify-between">
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                     ${product.price.toFixed(2)}

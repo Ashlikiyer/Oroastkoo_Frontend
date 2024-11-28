@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
 import dataFetch from "@/services/data-services"; // Assuming this is your fetch service
 
+interface Category {
+  _id: string;
+  categoryName: string;
+}
+
+
 interface EditProductProps {
   toggleModal: () => void;
   productData: {
     _id: string;
     name: string;
-    category: string;
+    category: Category;
     price: number;
-    stock_quantity: number;
     image?: File | null;
   };
   onSave: (updatedProduct: {
     _id: string;
     name: string;
-    category: string;
+    category: Category;
     price: number;
-    stock_quantity: number;
     image: File | null;
   }) => void;
 }
@@ -27,17 +31,15 @@ const EditProduct: React.FC<EditProductProps> = ({
   onSave,
 }) => {
   const [productName, setProductName] = useState(productData.name);
-  const [category, setCategory] = useState(productData.category);
+  const [category, setCategory] = useState(productData.category._id);
   const [price, setPrice] = useState(productData.price);
-  const [quantity, setQuantity] = useState(productData.stock_quantity);
   const [image, setImage] = useState<File | null>(productData.image || null);
   const [categories, setCategories] = useState<any[]>([]); // For fetched categories
 
   useEffect(() => {
     setProductName(productData.name);
-    setCategory(productData.category);
+    setCategory(productData.category._id);
     setPrice(productData.price);
-    setQuantity(productData.stock_quantity);
     setImage(productData.image || null);
   }, [productData]);
 
@@ -81,17 +83,25 @@ const EditProduct: React.FC<EditProductProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
   
+    const selectedCategory = categories.find(cat => cat._id === category);
+    if (!selectedCategory) {
+      console.error("Category not found");
+      return;
+    }
+  
     const updatedProduct = {
       _id: productData._id,
       name: productName,
-      stock_quantity: quantity,
-      category,
+      category: selectedCategory._id, // Pass the entire Category object
       price,
       image,
     };
+
+    console.log(updatedProduct)
   
     onSave(updatedProduct);
   };
+  
   
 
   return (
@@ -136,7 +146,7 @@ const EditProduct: React.FC<EditProductProps> = ({
                 <select
                   className="w-full p-3 border rounded-lg bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) => setCategory(e.target.value)} // Store category ID
                   required
                 >
                   <option value="">Choose a category</option>
@@ -146,6 +156,7 @@ const EditProduct: React.FC<EditProductProps> = ({
                     </option>
                   ))}
                 </select>
+
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -157,19 +168,6 @@ const EditProduct: React.FC<EditProductProps> = ({
                   placeholder="₱0.00"
                   value={price}
                   onChange={(e) => setPrice(Number(e.target.value))}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  className="w-full p-3 border rounded-lg bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="Quantity"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
                   required
                 />
               </div>
