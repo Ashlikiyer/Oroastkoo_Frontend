@@ -1,6 +1,6 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Popup from "@/components/Dashboard/Popup";
 import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import dataFetch from "@/services/data-services";
@@ -18,13 +18,9 @@ interface Product {
 }
 
 const Product = () => {
-  const [isPopupVisible, setPopupVisible] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const token = localStorage.getItem("adminToken");
 
-  const togglePopup = () => {
-    setPopupVisible(!isPopupVisible);
-  };
 
   const fetchProducts = async () => {
     try {
@@ -102,7 +98,7 @@ const Product = () => {
                   <button
                     type="button"
                     className="rounded-full bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
-                    onClick={togglePopup}
+                    
                   >
                     Add to Tray
                   </button>
@@ -114,12 +110,7 @@ const Product = () => {
       </section>
       <Footer />
 
-      {isPopupVisible && (
-        <div>
-          <Popup />
-        </div>
-      )}
-
+      
     </div>
   );
 };

@@ -1,16 +1,16 @@
 import React from "react";
 
-interface DeleteProductProps {
+interface DeleteCategoryProps {
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-const DeleteProduct: React.FC<DeleteProductProps> = ({
+const DeleteCategory: React.FC<DeleteCategoryProps> = ({
   onCancel,
   onConfirm,
 }) => {
   return (
-    <div>
+    <div> 
       <div
         id="deleteModal"
         tabIndex={-1}
@@ -72,4 +72,4 @@ const DeleteProduct: React.FC<DeleteProductProps> = ({
   );
 };
 
-export default DeleteProduct;
+export default DeleteCategory;

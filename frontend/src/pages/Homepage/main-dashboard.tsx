@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import BreadCrumbs from "@/components/ui/BreadCrumbs";
-import Popup from "@/components/Dashboard/Popup";
 import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,11 +16,9 @@ interface Product {
   _id: string;
   name: string;
   price: number;
-  stock_quantity: number;
 }
 
 const Home = () => {
-  const [isPopupVisible, setPopupVisible] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const token = localStorage.getItem("adminToken");
 
@@ -29,9 +26,7 @@ const Home = () => {
     fetchProducts();
   } , []);
 
-  const togglePopup = () => {
-    setPopupVisible(!isPopupVisible);
-  };
+  
 
   const fetchProducts = async () => {
     try {
@@ -136,9 +131,7 @@ const Home = () => {
                         <p className="text-gray-500 dark:text-gray-400">
                           Price: ${product.price}
                         </p>
-                        <p className="text-gray-500 dark:text-gray-400">
-                          Stock: {product.stock_quantity}
-                        </p>
+                       
                         <div className="mt-4 flex items-center justify-between">
                           <p className="text-xl font-bold text-gray-900 dark:text-white">
                             ${product.price}
@@ -146,7 +139,7 @@ const Home = () => {
                           <button
                             type="button"
                             className="flex items-center rounded-full bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
-                            onClick={togglePopup}
+                            
                           >
                             Add to Tray
                           </button>
@@ -162,12 +155,7 @@ const Home = () => {
         </div>
       </section>
 
-      {isPopupVisible && (
-        <div>
-          <Popup />
-        </div>
-      )}
-
+      
       <Footer />
     </div>
   );
