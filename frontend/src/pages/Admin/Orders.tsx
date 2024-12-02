@@ -1,13 +1,26 @@
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import DeleteProduct from "@/components/Admin/DeleteProduct";
+import EditOrder from "@/components/Admin/EditOrder";
+
+interface Order {
+  id: number;
+  status: string;
+}
 
 const Orders = () => {
   const [isDeleteOrderModalOpen, setIsDeleteOrderModalOpen] = useState(false);
+  const [isEditOrderModalOpen, setIsEditOrderModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const toggleDeleteOrderModal = () => {
     setIsDeleteOrderModalOpen(!isDeleteOrderModalOpen);
+  };
+
+  const toggleEditOrderModal = (order: SetStateAction<Order | null>) => {
+    setSelectedOrder(order);
+    setIsEditOrderModalOpen(!isEditOrderModalOpen);
   };
 
   return (
@@ -29,16 +42,6 @@ const Orders = () => {
               </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex justify-end items-center space-x-4 mb-4">
-              <div className="flex items-center space-x-2">
-                <label className="text-gray-600 font-medium">Sort by:</label>
-                <select className="border-gray-300 rounded-lg px-3 py-1.5 shadow focus:ring focus:ring-blue-300">
-                  <option>All</option>
-                </select>
-              </div>
-            </div>
-
             {/* Orders Table */}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
@@ -49,6 +52,7 @@ const Orders = () => {
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Price</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Purchased Date</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Customer's Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
                     <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
@@ -59,13 +63,22 @@ const Orders = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">P280.00</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">29/02/2009</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Customer's name</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Pending</td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                      <button
-                        onClick={toggleDeleteOrderModal}
-                        className="ml-2 text-red-500 hover:text-red-700"
-                      >
-                        <img src="src/images/icons8-delete.svg" alt="Delete" />
-                      </button>
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={toggleDeleteOrderModal}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <img src="src/images/icons8-delete.svg" alt="Delete" />
+                        </button>
+                        <button
+                          onClick={() => toggleEditOrderModal({ id: 1, status: "Pending" })}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          Edit Status
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -75,20 +88,30 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* Delete Modal */}
+      {/* Modals */}
       {isDeleteOrderModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-black bg-opacity-50 absolute inset-0" onClick={toggleDeleteOrderModal}></div>
+          <div
+            className="bg-black bg-opacity-50 absolute inset-0"
+            onClick={toggleDeleteOrderModal}
+          ></div>
           <div className="relative z-10">
             <DeleteProduct
               onCancel={toggleDeleteOrderModal}
               onConfirm={() => {
-                console.log("Order deleted!"); // Add your delete logic here
+                console.log("Order deleted!");
                 toggleDeleteOrderModal();
               }}
             />
           </div>
         </div>
+      )}
+
+      {isEditOrderModalOpen && selectedOrder && (
+        <EditOrder
+          order={selectedOrder}
+          onClose={() => setIsEditOrderModalOpen(false)}
+        />
       )}
     </div>
   );

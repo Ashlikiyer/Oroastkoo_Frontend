@@ -1,3 +1,4 @@
+
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
 import CreateProduct from "@/components/Admin/CreateProduct";
@@ -191,7 +192,7 @@ const ProductAdmin = () => {
       </div>
 
       {/* Modals */}
-      {isModalOpen && <CreateProduct toggleModal={toggleModal} />}
+      {isModalOpen && <CreateProduct toggleModal={toggleModal} callback={fetchProducts} />}
       {isEditModalOpen && editProductData && (
         <EditProduct
           productData={editProductData}
