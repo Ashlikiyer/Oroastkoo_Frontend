@@ -1,7 +1,7 @@
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
 import { SetStateAction, useState } from "react";
-import DeleteProduct from "@/components/Admin/DeleteProduct";
+import DeleteOrder from "@/components/Admin/DeleteOrder"; // Updated import
 import EditOrder from "@/components/Admin/EditOrder";
 
 interface Order {
@@ -21,6 +21,11 @@ const Orders = () => {
   const toggleEditOrderModal = (order: SetStateAction<Order | null>) => {
     setSelectedOrder(order);
     setIsEditOrderModalOpen(!isEditOrderModalOpen);
+  };
+
+  const handleDeleteOrderConfirm = () => {
+    console.log("Order deleted!"); // Replace this with actual deletion logic
+    toggleDeleteOrderModal();
   };
 
   return (
@@ -90,21 +95,10 @@ const Orders = () => {
 
       {/* Modals */}
       {isDeleteOrderModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="bg-black bg-opacity-50 absolute inset-0"
-            onClick={toggleDeleteOrderModal}
-          ></div>
-          <div className="relative z-10">
-            <DeleteProduct
-              onCancel={toggleDeleteOrderModal}
-              onConfirm={() => {
-                console.log("Order deleted!");
-                toggleDeleteOrderModal();
-              }}
-            />
-          </div>
-        </div>
+        <DeleteOrder
+          onCancel={toggleDeleteOrderModal}
+          onConfirm={handleDeleteOrderConfirm}
+        />
       )}
 
       {isEditOrderModalOpen && selectedOrder && (
