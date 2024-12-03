@@ -9,6 +9,7 @@ const DeleteOrder: React.FC<DeleteOrderProps> = ({
   onCancel,
   onConfirm,
 }) => {
+
   return (
     <div> 
       <div

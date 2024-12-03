@@ -74,7 +74,7 @@ const Category = () => {
 
       if (response && typeof response === "object" && "data" in response) {
         console.log("Category updated successfully:", response.data);
-        fetchCategories(); // Refetch categories after successful update
+        fetchCategories();
       } else {
         throw new Error("Invalid response format");
       }
@@ -107,7 +107,6 @@ const Category = () => {
       ) {
         console.log("Category deleted successfully:", response);
 
-        // Optimistically remove the deleted category from the state
         setCategoryData((prevCategories) =>
           prevCategories.filter(
             (category) => category._id !== currentCategory._id

@@ -6,6 +6,7 @@ import EditProduct from "@/components/Admin/EditProduct";
 import DeleteProduct from "@/components/Admin/DeleteProduct";
 import { useEffect, useState } from "react";
 import dataFetch from "@/services/data-services";
+import Category from "./Category";
 
 interface Category {
   _id: string;
