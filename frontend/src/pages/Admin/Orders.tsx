@@ -1,27 +1,100 @@
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
-import { SetStateAction, useState } from "react";
-import DeleteProduct from "@/components/Admin/DeleteProduct";
 import EditOrder from "@/components/Admin/EditOrder";
+import { useEffect, useState } from "react";
+import dataFetch from "@/services/data-services";
+import DeleteOrder from "@/components/Admin/DeleteOrder";
 
-interface Order {
-  id: number;
+
+interface OrderData {
+  id: string;
+  _id: string;
   status: string;
+  user: {
+    _id: string;
+    fullName: string; //customer name
+  };
+  items: {
+    product: { 
+      _id: string;
+      name: string; //product name
+      price: number;
+    };
+  }[];
+  totalAmount: number; //total amount of the order
+  orderStatus: string;
+  createdAt: string;
+  updatedAt: string;
 }
+
 
 const Orders = () => {
   const [isDeleteOrderModalOpen, setIsDeleteOrderModalOpen] = useState(false);
   const [isEditOrderModalOpen, setIsEditOrderModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
+  const [orderData, setOrderData] = useState<OrderData[]>([]);
 
-  const toggleDeleteOrderModal = () => {
+  const toggleDeleteOrderModal = (clearOrder = false) => {
+    if (clearOrder && isDeleteOrderModalOpen) {
+      setSelectedOrder(null);
+    }
     setIsDeleteOrderModalOpen(!isDeleteOrderModalOpen);
   };
 
-  const toggleEditOrderModal = (order: SetStateAction<Order | null>) => {
-    setSelectedOrder(order);
+  const toggleEditOrderModal = (order: OrderData) => {
+    setSelectedOrder({
+      ...order,
+      id: order._id,
+    });
     setIsEditOrderModalOpen(!isEditOrderModalOpen);
   };
+  
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const endpoint = "/admin/orders/customersOrders";
+      const token = localStorage.getItem("adminToken");
+      if (!token) throw new Error("Token not found");
+      const method = "GET";
+      const response = await dataFetch(endpoint, method, {}, token);
+      console.log(response);
+      
+      if (response && typeof response === "object" && "data" in response) {
+        setOrderData(response.data as OrderData[]);
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  const handleDeleteOrderConfirm = async () => {
+    try {
+        if (!selectedOrder) throw new Error("No order selected");
+
+        const endpoint = `/admin/orders/deleteOrder/${selectedOrder._id}`;
+        const token = localStorage.getItem("adminToken");
+        if (!token) throw new Error("Token not found");
+
+        const response = await dataFetch(endpoint, "DELETE", {}, token);
+
+        if (response) {
+            console.log("Order deleted successfully");
+            // Update orderData
+            setOrderData((prev) => prev.filter((order) => order._id !== selectedOrder._id));
+            toggleDeleteOrderModal();
+        } else {
+            throw new Error("Failed to delete order");
+        }
+    } catch (error) {
+        console.error("Error deleting order:", error);
+    }
+};
 
   return (
     <div className="flex">
@@ -38,7 +111,7 @@ const Orders = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <div className="bg-yellow-500 text-white rounded-lg p-4 shadow-lg">
                 <h2 className="text-xl font-semibold">Total Orders</h2>
-                <p className="text-2xl font-bold">1</p>
+                <p className="text-2xl font-bold">{orderData.length}</p>
               </div>
             </div>
 
@@ -57,23 +130,37 @@ const Orders = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  <tr className="hover:bg-gray-50 transition duration-200">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Product name</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">P280.00</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">29/02/2009</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Customer's name</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Pending</td>
+                {orderData.map((order, index) => (
+                  <tr key={order._id} className="hover:bg-gray-50 transition duration-200">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {order.items.map(item => item.product?.name) || "No orders found"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    ₱{order.totalAmount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {order.user?.fullName || "Unknown"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {order.orderStatus || "Unknown"}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                       <div className="flex items-center justify-center space-x-2">
                         <button
-                          onClick={toggleDeleteOrderModal}
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setTimeout(() => toggleDeleteOrderModal(), 0);
+                          }}
                           className="text-red-500 hover:text-red-700"
                         >
                           <img src="src/images/icons8-delete.svg" alt="Delete" />
                         </button>
                         <button
-                          onClick={() => toggleEditOrderModal({ id: 1, status: "Pending" })}
+                          onClick={() => toggleEditOrderModal(order)}
                           className="text-blue-500 hover:text-blue-700"
                         >
                           Edit Status
@@ -81,6 +168,7 @@ const Orders = () => {
                       </div>
                     </td>
                   </tr>
+                ))}
                 </tbody>
               </table>
             </div>
@@ -90,27 +178,19 @@ const Orders = () => {
 
       {/* Modals */}
       {isDeleteOrderModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="bg-black bg-opacity-50 absolute inset-0"
-            onClick={toggleDeleteOrderModal}
-          ></div>
-          <div className="relative z-10">
-            <DeleteProduct
-              onCancel={toggleDeleteOrderModal}
-              onConfirm={() => {
-                console.log("Order deleted!");
-                toggleDeleteOrderModal();
-              }}
-            />
-          </div>
-        </div>
+        <DeleteOrder 
+        onCancel={toggleDeleteOrderModal} 
+        onConfirm={handleDeleteOrderConfirm} 
+        />
       )}
 
       {isEditOrderModalOpen && selectedOrder && (
         <EditOrder
-          order={selectedOrder}
-          onClose={() => setIsEditOrderModalOpen(false)}
+          order={selectedOrder as OrderData}
+          onClose={() => {
+            setIsEditOrderModalOpen(false);
+            fetchOrders();
+          }}
         />
       )}
     </div>

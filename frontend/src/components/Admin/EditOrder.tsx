@@ -1,21 +1,51 @@
 import { useState } from "react";
+import dataFetch from "@/services/data-services";
 
-interface Order {
-  id: number;
+interface OrderData {
+  id: string | undefined;
   status: string;
 }
 
 interface EditOrderProps {
-  order: Order;
+  order: OrderData;
   onClose: () => void;
+}
+
+interface ResponseData {
+  success: boolean;
+  message: string;
+  data?: any;
 }
 
 const EditOrder = ({ order, onClose }: EditOrderProps) => {
   const [status, setStatus] = useState(order.status);
 
-  const updateOrderStatus = () => {
-    console.log(`Order ID: ${order.id}, New Status: ${status}`);
-    onClose(); // Close modal after saving
+  const updateOrderStatus = async () => {
+    if (!order.id) {
+      console.error("Order ID is missing!");
+      return;
+    }
+
+    try {
+      const endpoint = `/admin/orders/updateOrder/${order.id}`;
+      console.log("Request URL: ", endpoint);
+      const token = localStorage.getItem("adminToken");
+      if (!token) throw new Error("Token not found");
+
+      const response = await dataFetch(endpoint, "PUT", { status }, token) as ResponseData;
+      if (response.success) {
+        console.log("Order status updated successfully:", response.data);
+        onClose(); // Close modal after saving
+      } else {
+        console.error("Failed to update order status:", response.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error updating order status:", error.message);
+      } else {
+        console.error("An unknown error occurred");
+      }
+    }
   };
 
   return (
