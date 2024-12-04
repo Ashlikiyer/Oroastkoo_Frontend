@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import dataFetch from "@/services/data-services";
+
 interface Category {
   _id: string;
   categoryName: string;
@@ -13,18 +13,19 @@ interface Product {
   _id: string;
   name: string;
   price: number;
-  image_url?: string; // Optional image URL field
-  category: Category
+  image_url?: string;
+  category: Category;
 }
 
 const Product = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const token = localStorage.getItem("adminToken");
-
+  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
+  const token = localStorage.getItem("userToken");
 
   const fetchProducts = async () => {
     try {
-      const endpoint = "/admin/products/products";
+      const endpoint = "/user/products/products";
       if (!token) throw new Error("Token not found");
 
       const method = "GET";
@@ -33,11 +34,49 @@ const Product = () => {
       if (response && typeof response === "object" && "data" in response) {
         setProducts(response.data as Product[]);
       } else {
+        console.log("Token:", token); // Debugging log
         throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false); // Set loading to false when fetching is done
     }
+  };
+
+  const addToCart = async (productId: string, quantity: number) => {
+    try {
+      const endpoint = "/user/cart/addtoCart";
+      const method = "POST";
+      const token = localStorage.getItem("userToken");
+      if (!token) throw new Error("Unauthorized");
+
+      const response = await dataFetch(endpoint, method, { productId, quantity }, token);
+      if (response && typeof response === "object" && "success" in response) {
+        console.log("Cart item added:", response);
+        alert("Item added to cart successfully");
+      } else {
+        console.log("Token:", token); // Debugging log
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  const handleQuantityChange = (productId: string, type: 'increase' | 'decrease') => {
+    setQuantities((prevQuantities) => {
+      const currentQuantity = prevQuantities[productId] || 1;
+      let newQuantity = currentQuantity;
+
+      if (type === 'increase') {
+        newQuantity += 1;
+      } else if (type === 'decrease' && currentQuantity > 1) {
+        newQuantity -= 1;
+      }
+
+      return { ...prevQuantities, [productId]: newQuantity };
+    });
   };
 
   useEffect(() => {
@@ -87,7 +126,7 @@ const Product = () => {
                   alt={product.name}
                 />
               </div>
-              <div className="pt-4">
+              <div className="pt-4 ">
                 <h2 className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                   {product.name}
                 </h2>
@@ -95,22 +134,40 @@ const Product = () => {
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                     ${product.price.toFixed(2)}
                   </p>
-                  <button
-                    type="button"
-                    className="rounded-full bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
-                    
-                  >
-                    Add to Tray
-                  </button>
+                  <div className="flex items-center">
+                    {/* Decrease button */}
+                    <button
+                      onClick={() => handleQuantityChange(product._id, 'decrease')}
+                      className="rounded-sm border border-black px-3 py-1 text-xs font-medium text-black transition hover:border-gray-700"
+                    >
+                      -
+                    </button>
+                    {/* Display quantity */}
+                    <span className="mx-3 text-lg text-gray-800">{quantities[product._id] || 1}</span>
+                    {/* Increase button */}
+                    <button
+                      onClick={() => handleQuantityChange(product._id, 'increase')}
+                      className="rounded-sm border border-black px-3 py-1 text-xs font-medium text-black transition hover:border-gray-700"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+                <button
+                  onClick={() => addToCart(product._id, quantities[product._id] || 1)}
+                  className="ml-[30%] mt-4 rounded-sm bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
+                >
+                  Add to Tray
+                </button>
+                <p className="mt-2 text-sm text-gray-600">Quantity: {quantities[product._id] || 1}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
-      <Footer />
 
-      
+      {/* Render Footer only after products have been fetched */}
+      {!isLoading && <Footer />}
     </div>
   );
 };

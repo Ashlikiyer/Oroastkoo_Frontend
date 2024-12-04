@@ -37,7 +37,7 @@ const AdminLogin = () => {
 
       if (response.success) {
         alert(response.message); // Notify admin
-        localStorage.setItem("admin", JSON.stringify(data)); // Save admin data in local storage
+        // localStorage.setItem("admin", JSON.stringify(data)); // Save admin data in local storage
         navigate("/ProductAdmin"); // Redirect to the ProductAdmin page
       }
     } catch (error) {

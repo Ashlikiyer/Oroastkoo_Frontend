@@ -32,6 +32,7 @@ const EditProduct: React.FC<EditProductProps> = ({
 }) => {
   const [productName, setProductName] = useState(productData.name);
   const [category, setCategory] = useState(productData.category._id);
+  console.log(category)
   const [price, setPrice] = useState(productData.price);
   const [image, setImage] = useState<File | null>(productData.image || null);
   const [categories, setCategories] = useState<any[]>([]); // For fetched categories
