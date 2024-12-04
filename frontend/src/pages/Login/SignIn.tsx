@@ -26,21 +26,24 @@ const SignIn = () => {
     const method = "POST";
 
     try {
-      const response = await dataFetch<{ success: boolean; message: string }>(
-        endpoint,
-        method,
-        data
-      );
+      const response = await dataFetch<{
+        success: boolean;
+        message: string;
+        token: string;
+      }>(endpoint, method, data);
       console.log("Server response:", response); // Debugging log
+      const userToken = response.token;
+      console.log("userToken token:", userToken); // Debugging log
+      localStorage.setItem("userToken", userToken);
 
       if (response.success) {
-        alert(response.message); // Notify the user
-        localStorage.setItem("user", JSON.stringify(data)); // Save user data in local storage
-        navigate("/"); // Redirect to the homepage
+        alert(response.message); // Notify admin
+        navigate("/"); // Redirect to the ProductAdmin page
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("Login failed. Please check your details and try again.");
+      console.error("Error during admin login:", error);
+      console.log(data)
+      alert("Login failed. Please check your credentials and try again.");
     }
   };
 

@@ -1,15 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderMain from "@/components/ui/HeaderMain";
+import dataFetch from "@/services/data-services";
 
+interface FormData {
+  username: string;
+  email: string;
+}
 
 const ProfileUser: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "User Name",
-    email: "user123@gmail.com",
-    password: "********",
-  });
+  const [formData, setFormData] = useState<FormData>({ username: "", email: "" });
+
+  const token = localStorage.getItem("userToken");
+
+  // Fetch user profile data
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const endpoint = "/user/myprofile";
+      if (!token) throw new Error("Token not found");
+
+      const method = "GET";
+      const response = await dataFetch(endpoint, method, {}, token);
+
+      if (response && typeof response === "object" && "data" in response) {
+        const profileData = response.data as { username: string; email: string; password: string; profileImage?: string };
+        setFormData({
+          username: profileData.username,
+          email: profileData.email,
+        });
+        console.log(profileData)
+
+        // Assuming the profile data includes an image URL
+        if (profileData.profileImage) {
+          setProfileImage(profileData.profileImage);
+        }
+      } else {
+        console.log("Token:", token); // Debugging log
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Handle profile image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +121,7 @@ const ProfileUser: React.FC = () => {
               <input
                 type="text"
                 id="name"
-                value={formData.name}
+                value={formData.username}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
                 className={`mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
@@ -113,25 +150,6 @@ const ProfileUser: React.FC = () => {
               />
             </div>
 
-            {/* Password Display */}
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                readOnly={!isEditing}
-                className={`mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
 
             {/* Action Buttons */}
             <div className="text-right">
