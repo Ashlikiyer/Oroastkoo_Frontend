@@ -7,12 +7,12 @@ const HeaderMain = () => {
 
   useEffect(() => {
     // Check if user is logged in when the component mounts or updates
-    const userData = localStorage.getItem("user");
+    const userData = localStorage.getItem("userToken");
     setIsLoggedIn(!!userData); // If userData exists, set to true
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("userToken");
     setIsLoggedIn(false);
     window.location.href = "/Login"; // Redirect to Login
   };

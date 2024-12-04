@@ -50,46 +50,53 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
     try {
-      e.preventDefault();
-
-      const category = "672fddf7130132d09a332946";
-      const image = "http://localhost:5000/uploads/1732726691765-498313938.jpg"; // Default category ID
-
-      // Simulate form submission logic
+      const selectedCategory = categories.find(
+        (cat: { _id: string }) => cat._id === category
+      );
+  
+      if (!selectedCategory) {
+        throw new Error("Invalid category selected");
+      }
+  
       const payload = {
         name,
-        category,
         price,
-        image,
+        stock_quantity: 505, // Set this dynamically if needed
+        image: "http://localhost:5000/uploads/1732726691765-498313938.jpg",
+        category: {
+          _id: selectedCategory._id,
+          categoryName: selectedCategory.categoryName,
+        },
       };
-
+  
       console.log("Payload:", payload);
+  
       const endPoint = "/admin/products/addproducts";
       const method = "POST";
       const token = localStorage.getItem("adminToken");
-      console.log("Token:", token);
+  
       if (!token) {
-        throw new Error("Unauthorized");  
+        throw new Error("Unauthorized");
       }
-
+  
       const response = await dataFetch(endPoint, method, payload, token);
       setProduct(response);
-      // Display success message
       setSuccessMessage("Product successfully created!");
-
-      // Reset form and close modal after a short delay
+  
       setTimeout(() => {
-        setSuccessMessage(null); // Clear success message
-        handleClose(); // Close the modal
+        setSuccessMessage(null);
       }, 2000);
-      handleClose();
       toggleCallback();
+      handleClose();
     } catch (error) {
       console.error("Error creating product:", error);
       setSuccessMessage("Error creating product. Please try again.");
     }
   };
+  
 
   const toggleCallback = () => {
     callback();
