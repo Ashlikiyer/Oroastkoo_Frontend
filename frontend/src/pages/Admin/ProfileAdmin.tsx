@@ -1,15 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
+import dataFetch from "@/services/data-services";
 
 const ProfileAdmin: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: "Admin name",
-    email: "admin123@gmail.com",
+    name: "",
+    email: "",
     password: "********",
   });
+  const token = localStorage.getItem("adminToken");
+
+  // Fetch user data
+  const fetchUserData = async () => {
+    try {
+      const response = await dataFetch("admin/myprofile", "GET", {}, token!);
+      const userData = (response as { data: { name: string; email: string } }).data;
+      setFormData({ ...userData, password: formData.password });
+    } catch (error) {
+      console.error("Fetch user data error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   // Handle profile image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
