@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import dataFetch from "@/services/data-services";
+import productPic from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
 
 interface Category {
   _id: string;
@@ -122,7 +123,7 @@ const Product = () => {
               <div className="relative h-40 w-72 rounded-lg overflow-hidden bg-gray-100">
                 <img
                   className="mx-auto h-full transition-transform duration-300 ease-in-out hover:scale-110"
-                  src={product.image_url || "https://via.placeholder.com/150"}
+                  src={product.image_url || productPic}
                   alt={product.name}
                 />
               </div>
