@@ -11,6 +11,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import dataFetch from "@/services/data-services";
+import productPic from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
+
 
 interface Product {
   _id: string;
@@ -31,7 +33,7 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     fetchProducts();
@@ -40,7 +42,7 @@ const Home = () => {
 
   const fetchProducts = async () => {
     try {
-      const endpoint = "/admin/products/products";
+      const endpoint = "/user/products/products";
       if (!token) {
         throw new Error("Token not found");
       }
@@ -64,7 +66,7 @@ const Home = () => {
 
   const fetchCategories = async () => {
     try {
-      const endpoint = "/admin/category/viewCategories";
+      const endpoint = "/user/category/viewCategories";
       if (!token) {
         throw new Error("Token not found");
       }
@@ -183,7 +185,7 @@ const Home = () => {
                     <Card className="shadow-lg transform transition duration-500 hover:scale-105">
                       <div className="relative h-48 w-full rounded-t-lg overflow-hidden bg-gray-100">
                         <img
-                          src={`src/images/default-product.png`}
+                          src={productPic}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />

@@ -61,7 +61,7 @@ const Orders = () => {
       if (!token) throw new Error("Token not found");
       const method = "GET";
       const response = await dataFetch(endpoint, method, {}, token);
-      console.log(response);
+      console.log('this is the orders', response);
       
       if (response && typeof response === "object" && "data" in response) {
         setOrderData(response.data as OrderData[]);
