@@ -112,7 +112,17 @@ const Checkout = () => {
                         key={itemIndex}
                         className="flex justify-between items-center py-4 border-b border-gray-200"
                       >
-                        <span className="text-gray-700">{item.product.name}</span>
+                        <div className="flex items-center space-x-4">
+                          {/* Product Image */}
+                          <img 
+                            src={item.product.image} 
+                            alt={item.product.name} 
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          {/* Product Name */}
+                          <span className="text-gray-700">{item.product.name}</span>
+                        </div>
+                        {/* Product Price */}
                         <span className="text-gray-800 font-semibold">
                           ₱{(item.price * item.quantity).toFixed(2)}
                         </span>
