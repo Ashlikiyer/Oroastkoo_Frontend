@@ -26,6 +26,7 @@ const Checkout = () => {
         
         setOrders(sortedOrders);
         calculateTotal(sortedOrders);
+        console.log("Orders fetched successfully", sortedOrders);
       } else {
         throw new Error("Invalid response format");
       }
@@ -121,6 +122,8 @@ const Checkout = () => {
                           />
                           {/* Product Name */}
                           <span className="text-gray-700">{item.product.name}</span>
+                          {/* Product Quantity */}
+                          <span className="text-sm text-gray-500">x{item.quantity}</span>
                         </div>
                         {/* Product Price */}
                         <span className="text-gray-800 font-semibold">
