@@ -12,7 +12,7 @@ interface OrderData {
   status: string;
   user: {
     _id: string;
-    fullName: string; //customer name
+    username: string; //customer name
   };
   items: {
     product: { 
@@ -61,17 +61,25 @@ const Orders = () => {
       if (!token) throw new Error("Token not found");
       const method = "GET";
       const response = await dataFetch(endpoint, method, {}, token);
-      console.log('this is the orders', response);
-      
+  
+      // Assert the response type explicitly to OrderData[] (array of OrderData)
       if (response && typeof response === "object" && "data" in response) {
-        setOrderData(response.data as OrderData[]);
+        const orders = response.data as OrderData[]; // Explicitly cast to OrderData[]
+  
+        // Sort the orders in descending order based on `createdAt`
+        const sortedOrders = orders.sort((a, b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setOrderData(sortedOrders);
+        console.log("Orders fetched successfully", sortedOrders);
       } else {
         throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+  
   
   const handleDeleteOrderConfirm = async () => {
     try {
@@ -143,7 +151,7 @@ const Orders = () => {
                     {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {order.user?.fullName || "Unknown"}
+                    {order.user?.username || "Unknown"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       {order.orderStatus || "Unknown"}

@@ -18,10 +18,14 @@ const Checkout = () => {
     try {
       const endpoint = "/user/order/myOrders";
       const response = await dataFetch(endpoint, "GET", {}, token!);
-
+  
       if (response && typeof response === "object" && "data" in response) {
-        setOrders(response.data as any[]);
-        calculateTotal(response.data as any[]);
+        const sortedOrders = (response.data as any[]).sort((a: any, b: any) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        
+        setOrders(sortedOrders);
+        calculateTotal(sortedOrders);
       } else {
         throw new Error("Invalid response format");
       }
@@ -36,7 +40,6 @@ const Checkout = () => {
       const response = await dataFetch(endpoint, "DELETE", {}, token!);
 
       if (response && typeof response === "object" && "success" in response) {
-        console.log("Order deleted:", response);
         fetchOrders();
       } else {
         throw new Error("Invalid response format");
@@ -56,6 +59,21 @@ const Checkout = () => {
     });
 
     setOrderTotals(totals); 
+  };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'text-red-500'; // red for Pending
+      case 'Order Confirmed':
+        return 'text-orange-500'; // yellow for Completed
+      case 'Preparing':
+        return 'text-yellow-500'; // yellow for Preparing':
+      case 'Received':
+        return 'text-green-500'; // green for Received':
+      default:
+        return 'text-gray-600'; // Default gray for unknown status
+    }
   };
 
   return (
@@ -79,51 +97,49 @@ const Checkout = () => {
             <ul>
               {orders.map((order, index) => (
                 <div key={order._id} className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  Order ID: {order._id}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Created At: {new Date(order.createdAt).toLocaleString()}
-                </p>
-                <p className="text-sm text-gray-600">Status: {order.userStatus}</p>
-                <div>
-                  {order.items.map((item: any, itemIndex: number) => (
-                    <li
-                      key={itemIndex}
-                      className="flex justify-between items-center py-4 border-b border-gray-200"
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    Order ID: {order._id}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Created At: {new Date(order.createdAt).toLocaleString()}
+                  </p>
+                  <p className={`text-sm ${getStatusClass(order.userStatus)}`}>
+                    Status: {order.userStatus}
+                  </p>
+                  <div>
+                    {order.items.map((item: any, itemIndex: number) => (
+                      <li
+                        key={itemIndex}
+                        className="flex justify-between items-center py-4 border-b border-gray-200"
+                      >
+                        <span className="text-gray-700">{item.product.name}</span>
+                        <span className="text-gray-800 font-semibold">
+                          ₱{(item.price * item.quantity).toFixed(2)}
+                        </span>
+                      </li>
+                    ))}
+                  </div>
+                  <li className="flex justify-between items-center py-4">
+                    <strong className="text-lg text-gray-800">Order Total</strong>
+                    <strong className="text-lg text-gray-900">
+                      ₱{orderTotals[index]?.toFixed(2)}
+                    </strong>
+                  </li>
+                  <div className="text-right">
+                    <button
+                      onClick={() => deleteOrder(order._id)}
+                      className="bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition"
                     >
-                      <span className="text-gray-700">{item.product.name}</span>
-                      <span className="text-gray-800 font-semibold">
-                        ₱{(item.price * item.quantity).toFixed(2)}
-                      </span>
-                    </li>
-                  ))}
+                      Delete Order
+                    </button>
+                  </div>
                 </div>
-                <li className="flex justify-between items-center py-4">
-                  <strong className="text-lg text-gray-800">Order Total</strong>
-                  <strong className="text-lg text-gray-900">
-                    ₱{orderTotals[index]?.toFixed(2)}
-                  </strong>
-                </li>
-                <div className="text-right">
-                  <button
-                    onClick={() => deleteOrder(order._id)}
-                    className="bg-red-700 text-white text-sm font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition"
-                  >
-                    Delete Order
-                  </button>
-                </div>
-              </div>
-              
               ))}
             </ul>
           </div>
-
-          
         </div>
       </main>
 
-      
       <Footer />
     </div>
   );

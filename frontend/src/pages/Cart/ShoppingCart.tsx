@@ -101,7 +101,7 @@ const ShoppingCart = () => {
         });
         setTimeout(() => {
           navigate("/Checkout");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       console.error("Error during checkout:", error);

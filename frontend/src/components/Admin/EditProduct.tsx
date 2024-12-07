@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import dataFetch from "@/services/data-services"; // Assuming this is your fetch service
+import ImageManager from "../ui/imageManager";
+import { Dialog, DialogContent } from "../ui/dialog";
 
 interface Category {
   _id: string;
   categoryName: string;
 }
-
 
 interface EditProductProps {
   toggleModal: () => void;
@@ -14,14 +15,14 @@ interface EditProductProps {
     name: string;
     category: Category;
     price: number;
-    image?: File | null;
+    image?: string | null; // Updated to match image URL type
   };
   onSave: (updatedProduct: {
     _id: string;
     name: string;
     category: Category;
     price: number;
-    image: File | null;
+    image: string | null;
   }) => void;
 }
 
@@ -32,10 +33,10 @@ const EditProduct: React.FC<EditProductProps> = ({
 }) => {
   const [productName, setProductName] = useState(productData.name);
   const [category, setCategory] = useState(productData.category._id);
-  console.log(category)
   const [price, setPrice] = useState(productData.price);
-  const [image, setImage] = useState<File | null>(productData.image || null);
+  const [image, setImage] = useState<string | null>(productData.image || null); // Updated to handle image URL
   const [categories, setCategories] = useState<any[]>([]); // For fetched categories
+  const [isImageManagerOpen, setIsImageManagerOpen] = useState(false); // State to control ImageManager visibility
 
   useEffect(() => {
     setProductName(productData.name);
@@ -43,6 +44,8 @@ const EditProduct: React.FC<EditProductProps> = ({
     setPrice(productData.price);
     setImage(productData.image || null);
   }, [productData]);
+
+  console.log(productData);
 
   useEffect(() => {
     fetchCategories();
@@ -75,21 +78,15 @@ const EditProduct: React.FC<EditProductProps> = ({
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const selectedCategory = categories.find(cat => cat._id === category);
     if (!selectedCategory) {
       console.error("Category not found");
       return;
     }
-  
+
     const updatedProduct = {
       _id: productData._id,
       name: productName,
@@ -98,12 +95,16 @@ const EditProduct: React.FC<EditProductProps> = ({
       image,
     };
 
-    console.log(updatedProduct)
-  
     onSave(updatedProduct);
   };
-  
-  
+
+  const openImageManager = () => {
+    setIsImageManagerOpen(true); // Open the ImageManager dialog
+  };
+
+  const closeImageManager = () => {
+    setIsImageManagerOpen(false); // Close the ImageManager dialog
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 p-4">
@@ -147,18 +148,20 @@ const EditProduct: React.FC<EditProductProps> = ({
                 <select
                   className="w-full p-3 border rounded-lg bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)} // Store category ID
+                  onChange={(e) => setCategory(e.target.value)}
                   required
                 >
                   <option value="">Choose a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.categoryName}
-                    </option>
-                  ))}
+                  {categories.map(
+                    (cat: { _id: string; categoryName: string }) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.categoryName}
+                      </option>
+                    )
+                  )}
                 </select>
-
               </div>
+
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Price
@@ -174,16 +177,13 @@ const EditProduct: React.FC<EditProductProps> = ({
               </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg h-48 cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 relative">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
+            <div
+              className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg h-48 cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 relative"
+              onClick={openImageManager} // Open ImageManager dialog on image click
+            >
               {image ? (
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={image}
                   alt="Product Preview"
                   className="object-cover w-full h-full rounded-lg"
                 />
@@ -192,7 +192,7 @@ const EditProduct: React.FC<EditProductProps> = ({
                   <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
                     <img
                       src="src/images/add-plus-circle-svgrepo-com.svg"
-                      alt="Add"
+                      alt="Add Icon"
                     />
                   </div>
                   <span className="text-lg font-medium mt-1">Add Image</span>
@@ -201,19 +201,15 @@ const EditProduct: React.FC<EditProductProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              className="px-5 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300"
-              onClick={toggleModal}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 text-white bg-black rounded-lg"
-            >
-              Update
+          <Dialog open={isImageManagerOpen} onOpenChange={setIsImageManagerOpen}>
+            <DialogContent>
+              <ImageManager setImage={setImage} onclose={closeImageManager} />
+            </DialogContent>
+          </Dialog>
+
+          <div className="mt-6">
+            <button type="submit" className="w-full p-2 rounded-lg bg-blue-600 text-white">
+              Save Changes
             </button>
           </div>
         </form>

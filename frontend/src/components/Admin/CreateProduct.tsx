@@ -1,19 +1,23 @@
-import dataFetch from "@/services/data-services";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "../ui/dialog";
+import ImageManager from "../ui/imageManager";  // Import ImageManager
+import dataFetch from "@/services/data-services";
 
 interface CreateProductProps {
   toggleModal: () => void;
   callback: () => void;
 }
 
-const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) => {
+const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) => {
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<string | null>("");  // Image state for the selected image
   const [category, setCategory] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [product, setProduct] = useState<any>([]);
-  const [categories, setCategories] = useState<any>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const [isImageManagerOpen, setIsImageManagerOpen] = useState<boolean>(false); // Dialog state for ImageManager
 
   useEffect(() => {
     fetchCategories();
@@ -34,61 +38,59 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
         {},
         token
       );
-      console.log("Categories:", response);
 
-      // Extract the data array
       if (response && response.success) {
         setCategories(response.data);
       } else {
         console.error("Unexpected response format:", response);
-        setCategories([]); // Default to an empty array if no valid data
+        setCategories([]);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setCategories([]); // Handle fetch errors gracefully
+      setCategories([]);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const selectedCategory = categories.find(
         (cat: { _id: string }) => cat._id === category
       );
-  
+
       if (!selectedCategory) {
         throw new Error("Invalid category selected");
       }
-  
+
       const payload = {
         name,
         price,
         stock_quantity: 505, // Set this dynamically if needed
-        image: "http://localhost:5000/uploads/1732726691765-498313938.jpg",
+        image, // Passing the image URL directly
         category: {
           _id: selectedCategory._id,
           categoryName: selectedCategory.categoryName,
         },
       };
-  
+
       console.log("Payload:", payload);
-  
+
       const endPoint = "/admin/products/addproducts";
       const method = "POST";
       const token = localStorage.getItem("adminToken");
-  
+
       if (!token) {
         throw new Error("Unauthorized");
       }
-  
+
       const response = await dataFetch(endPoint, method, payload, token);
-      setProduct(response);
       setSuccessMessage("Product successfully created!");
-  
+
       setTimeout(() => {
         setSuccessMessage(null);
       }, 2000);
+
       toggleCallback();
       handleClose();
     } catch (error) {
@@ -96,24 +98,21 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
       setSuccessMessage("Error creating product. Please try again.");
     }
   };
-  
 
   const toggleCallback = () => {
     callback();
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
-    }
   };
 
   const handleClose = () => {
     setName("");
     setCategory("");
     setPrice(0);
-    setImage(null);
+    setImage("");  // Reset the image URL
     toggleModal();
+  };
+
+  const closeImageManager = () => {
+    setIsImageManagerOpen(false);
   };
 
   return (
@@ -191,19 +190,15 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
                   required
                 />
               </div>
-              
             </div>
 
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg h-48 cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 relative">
-              {/* <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              /> */}
+            <div
+              className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 bg-gray-100 rounded-lg h-48 cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 relative"
+              onClick={() => setIsImageManagerOpen(true)} // Open ImageManager dialog on image click
+            >
               {image ? (
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={image}
                   alt="Product Preview"
                   className="object-cover w-full h-full rounded-lg"
                 />
@@ -212,7 +207,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
                   <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
                     <img
                       src="src/images/add-plus-circle-svgrepo-com.svg"
-                      alt="Oroastko Logo"
+                      alt="Add Icon"
                     />
                   </div>
                   <span className="text-lg font-medium mt-1">Add Image</span>
@@ -221,20 +216,16 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback}) =
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              className="px-5 py-2 text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300"
-              onClick={handleClose}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 text-white bg-black rounded-lg"
-            >
-              Create
-            </button>
+          <Dialog open={isImageManagerOpen} onOpenChange={setIsImageManagerOpen}>
+            <DialogContent>
+              <ImageManager setImage={setImage} onclose={closeImageManager} />
+            </DialogContent>
+          </Dialog>
+
+          <div className="mt-6">
+            <Button type="submit" className="w-full bg-blue-600 text-white">
+              Add Product
+            </Button>
           </div>
         </form>
       </div>

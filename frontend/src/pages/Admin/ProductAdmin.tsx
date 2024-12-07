@@ -17,7 +17,7 @@ interface ProductData {
   _id: string;
   name: string;
   price: number;
-  image_url?: string; // Optional image URL field
+  image?: string | null; // Optional image URL field
   category: Category
 }
 
