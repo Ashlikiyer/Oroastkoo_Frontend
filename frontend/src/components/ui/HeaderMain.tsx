@@ -3,17 +3,22 @@ import { useState, useEffect } from "react";
 
 const HeaderMain = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // New state to track admin login
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in when the component mounts or updates
-    const userData = localStorage.getItem("userToken");
-    setIsLoggedIn(!!userData); // If userData exists, set to true
+    // Check if user or admin is logged in
+    const userToken = localStorage.getItem("userToken");
+    const adminToken = localStorage.getItem("adminToken");
+    setIsLoggedIn(!!userToken || !!adminToken); // Set logged-in state
+    setIsAdmin(!!adminToken); // Set admin state
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userToken");
+    localStorage.removeItem("adminToken");
     setIsLoggedIn(false);
+    setIsAdmin(false);
     window.location.href = "/Login"; // Redirect to Login
   };
 
@@ -55,27 +60,36 @@ const HeaderMain = () => {
 
           {isLoggedIn ? (
             <div className="relative flex items-center space-x-2">
-              {/* Profile Icon */}
-              <div
-                className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 cursor-pointer"
-                onClick={toggleDropdown}
-              >
-                <svg
-                  className="absolute w-12 h-12 text-gray-400 -left-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
+              {/* Profile or Admin Button */}
+              {isAdmin ? (
+                <Link
+                  to="/ProductAdmin"
+                  className="text-white font-bold font-poppins"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
+                  Admin
+                </Link>
+              ) : (
+                <div
+                  className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 cursor-pointer"
+                  onClick={toggleDropdown}
+                >
+                  <svg
+                    className="absolute w-12 h-12 text-gray-400 -left-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              )}
 
               {/* Dropdown Menu */}
-              {isDropdownOpen && (
+              {!isAdmin && isDropdownOpen && (
                 <div
                   id="dropdown"
                   className="z-10 absolute right-0 mt-2 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
@@ -87,10 +101,10 @@ const HeaderMain = () => {
                   >
                     <li>
                       <Link
-                        to="/OrderHistory"
+                        to="/Checkout"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
-                        Orders
+                        Order Summary
                       </Link>
                     </li>
                     <li>

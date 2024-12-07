@@ -123,11 +123,7 @@ const Checkout = () => {
         </div>
       </main>
 
-      <div className="p-6 bg-white shadow-md">
-        <button className="w-full bg-black text-white text-lg font-semibold py-3 rounded-md hover:bg-black transition">
-          Confirm Order for Pickup
-        </button>
-      </div>
+      
       <Footer />
     </div>
   );

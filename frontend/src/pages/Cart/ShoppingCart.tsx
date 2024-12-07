@@ -4,6 +4,8 @@ import dataFetch from "@/services/data-services";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import productPic from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Category {
   _id: string;
@@ -41,7 +43,7 @@ interface ApiResponse {
 
 const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]); // Track selected items
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const navigate = useNavigate();
   const token = localStorage.getItem("userToken");
 
@@ -53,7 +55,6 @@ const ShoppingCart = () => {
     try {
       const response: ApiResponse = await dataFetch("/user/cart/mycart", "GET", {}, token!);
       if (response.success) {
-        console.log("Cart items:", response.data.items);
         setCartItems(response.data.items);
       }
     } catch (error) {
@@ -65,41 +66,57 @@ const ShoppingCart = () => {
   const updateCartItems = async (productId: string, newQuantity: number) => {
     try {
       const payload = { productId, newQuantity };
-      const response = await dataFetch(`/user/cart/updatecart`, "PUT", payload, token!) as { success: boolean };
+      const response = await dataFetch("/user/cart/updatecart", "PUT", payload, token!) as { success: boolean };
       if (response.success) fetchCartItems();
-      console.log("Product ID:", productId);
     } catch (error) {
       console.error("Error updating cart item:", error);
-      console.log("Product ID:", productId);
-      console.log("New Quantity:", newQuantity);
     }
   };
 
   const deleteItem = async (productId: string) => {
     try {
       const payload = { productId };
-      const response = await dataFetch(`/user/cart/deletecart`, "DELETE", payload, token!) as { success: boolean };
+      const response = await dataFetch("/user/cart/deletecart", "DELETE", payload, token!) as { success: boolean };
       if (response.success) fetchCartItems();
     } catch (error) {
       console.error("Error deleting cart item:", error);
-      console.log("Product ID:", productId);
     }
   };
 
   const checkout = async () => {
     try {
-      const payload = { selectedItems }; // Only pass selected items
+      const payload = { selectedItems };
       const response = await dataFetch("user/order/placeOrder", "POST", payload, token!) as { success: boolean };
       if (response.success) {
         fetchCartItems();
-        alert("Checkout successful!");
-        navigate("/Checkout"); // Redirect to the homepage after checkout
+        toast.success("Checkout successful! Redirecting to the checkout page...", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+        setTimeout(() => {
+          navigate("/Checkout");
+        }, 3000);
       }
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert("Checkout failed. Please try again.");
+      toast.error("Checkout failed. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
-  }
+  };
 
   const onIncrease = (item: CartItem) => {
     const newQuantity = item.quantity + 1;
@@ -118,7 +135,7 @@ const ShoppingCart = () => {
   const toggleSelectItem = (productId: string) => {
     setSelectedItems((prevSelectedItems) => {
       if (prevSelectedItems.includes(productId)) {
-        return prevSelectedItems.filter(id => id !== productId);
+        return prevSelectedItems.filter((id) => id !== productId);
       } else {
         return [...prevSelectedItems, productId];
       }
@@ -127,18 +144,18 @@ const ShoppingCart = () => {
 
   const calculateTotal = () =>
     cartItems
-      .filter((item) => selectedItems.includes(item.product._id)) // Calculate total for selected items only
+      .filter((item) => selectedItems.includes(item.product._id))
       .reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   return (
-    <div className="cart-container ">
+    <div className="cart-container">
+      <ToastContainer />
       <HeaderMain />
-      <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16 h-[70vh]">
-        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+        <div className="mx-auto max-w-screen-xl px-4 2xl:px-0 h-[70vh] overflow-auto">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
             Shopping Cart
           </h2>
-
           <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
             <div className="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
               <div className="space-y-6">
@@ -151,8 +168,8 @@ const ShoppingCart = () => {
                       <input
                         type="checkbox"
                         className="mr-4"
-                        checked={selectedItems.includes(item.product._id)} // Checkbox is checked if item is selected
-                        onChange={() => toggleSelectItem(item.product._id)} // Toggle selection
+                        checked={selectedItems.includes(item.product._id)}
+                        onChange={() => toggleSelectItem(item.product._id)}
                       />
                       <Link to={`/product/${item.product._id}`} className="shrink-0 md:order-1">
                         <img
@@ -233,27 +250,19 @@ const ShoppingCart = () => {
                       </div>
                     ))}
                 </div>
-                <dl className="flex items-center justify-between gap-4 border-t pt-2 dark:border-gray-700">
-                  <dt className="text-base font-bold text-gray-900 dark:text-white">
-                    Total
-                  </dt>
-                  <dd className="text-base font-bold text-gray-900 dark:text-white">
-                    ₱{calculateTotal()}
-                  </dd>
-                </dl>
-                {selectedItems.length > 0 ? (
-                  <button
-                    onClick={checkout}
-                    className="flex w-full items-center justify-center bg-red-600 text-white hover:bg-red-700"
-                  >
-                    Proceed to Checkout
-                  </button>
-                ) : (
-                  <p className="text-center text-gray-500">Select items to proceed.</p>
-                )}
+                <hr />
+                <div className="flex justify-between font-bold text-gray-900 dark:text-white">
+                  <span>Total:</span>
+                  <span>₱{calculateTotal()}</span>
+                </div>
               </div>
+              <button
+                onClick={checkout}
+                className="w-full rounded-lg bg-black px-6 py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
+              >
+                Proceed to Checkout
+              </button>
             </div>
-
           </div>
         </div>
       </section>
