@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/layout/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   Card,
@@ -13,57 +13,51 @@ import { Input } from "@/components/ui/layout/input";
 import { Label } from "@/components/ui/layout/label";
 import dataFetch from "@/services/data-services";
 
-const SignUp = () => {
-  const [username, setUsername] = useState(""); // Changed name to username
+const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  const RegisteredUser = async () => {
-    const data = { username, email, password }; // Payload structure matches the backend
+  const loginUser = async () => {
+    const data = { email, password }; // Payload structure matches the backend
     console.log("Payload sent to backend:", data); // Debugging log
 
-    const endpoint = "user/register";
+    const endpoint = "user/login";
     const method = "POST";
 
     try {
-      const response = await dataFetch<{ success: boolean; message: string }>(
-        endpoint,
-        method,
-        data
-      );
+      const response = await dataFetch<{
+        success: boolean;
+        message: string;
+        token: string;
+      }>(endpoint, method, data);
       console.log("Server response:", response); // Debugging log
+      const userToken = response.token;
+      console.log("userToken token:", userToken); // Debugging log
+      localStorage.setItem("userToken", userToken);
 
       if (response.success) {
-        alert(response.message); // Notify the user
+        alert(response.message); // Notify admin
+        navigate("/"); // Redirect to the ProductAdmin page
       }
     } catch (error) {
-      console.error("Error during registration:", error);
-      alert("Registration failed. Please check your details and try again.");
+      console.error("Error during admin login:", error);
+      console.log(data)
+      alert("Login failed. Please check your credentials and try again.");
     }
   };
 
   return (
-    <Card className="mx-auto mt-20 mb-20 max-w-sm">
+    <Card className="mx-auto mt-20 mb-32 max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Register</CardTitle>
+        <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
-          Enter your information to create an account
+          Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              type="text"
-              id="username"
-              placeholder="Kier"
-              required
-            />
-          </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -76,26 +70,27 @@ const SignUp = () => {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+            </div>
             <Input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               id="password"
               type="password"
-              placeholder="********"
               required
             />
           </div>
-          <Button onClick={RegisteredUser} type="button" className="w-full">
-            Register
+          <Button onClick={loginUser} type="submit" className="w-full">
+            Login
           </Button>
           <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
-              to="/Login"
+              to="/Register"
               className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
             >
-              Login
+              Register
             </Link>
           </div>
         </div>
@@ -104,4 +99,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default UserLogin;

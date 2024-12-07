@@ -1,12 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Toggle function for the dropdown menu
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken"); // Clear the admin token from local storage
+    navigate("/AdminLogin"); // Redirect to the Admin Login page
   };
 
   return (
@@ -30,7 +37,7 @@ const Header = () => {
               <button
                 id="dropdownDefaultButton"
                 onClick={toggleDropdown}
-                className="text-white bg-yellow-500  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 type="button"
               >
                 Admin
@@ -63,14 +70,6 @@ const Header = () => {
                     aria-labelledby="dropdownDefaultButton"
                   >
                     <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Admin
-                      </a>
-                    </li>
-                    <li>
                       <Link
                         to="/ProfileAdmin"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -78,14 +77,13 @@ const Header = () => {
                         Profile
                       </Link>
                     </li>
-
                     <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         Logout
-                      </a>
+                      </button>
                     </li>
                   </ul>
                 </div>

@@ -4,6 +4,8 @@ import Footer from "@/components/ui/Footer";
 import HeaderMain from "@/components/ui/HeaderMain";
 import dataFetch from "@/services/data-services";
 import productPic from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
+import { ToastContainer, toast } from "react-toastify"; // Import Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
 
 interface Category {
   _id: string;
@@ -55,24 +57,43 @@ const Product = () => {
       const response = await dataFetch(endpoint, method, { productId, quantity }, token);
       if (response && typeof response === "object" && "success" in response) {
         console.log("Cart item added:", response);
-        alert("Item added to cart successfully");
+        toast.success("Item added to cart successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       } else {
         console.log("Token:", token); // Debugging log
         throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
+      toast.error("Failed to add item to cart. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
 
-  const handleQuantityChange = (productId: string, type: 'increase' | 'decrease') => {
+  const handleQuantityChange = (productId: string, type: "increase" | "decrease") => {
     setQuantities((prevQuantities) => {
       const currentQuantity = prevQuantities[productId] || 1;
       let newQuantity = currentQuantity;
 
-      if (type === 'increase') {
+      if (type === "increase") {
         newQuantity += 1;
-      } else if (type === 'decrease' && currentQuantity > 1) {
+      } else if (type === "decrease" && currentQuantity > 1) {
         newQuantity -= 1;
       }
 
@@ -86,6 +107,7 @@ const Product = () => {
 
   return (
     <div className="product-container">
+      <ToastContainer /> {/* Add ToastContainer */}
       <HeaderMain />
       <section className="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-5">
         <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -138,7 +160,7 @@ const Product = () => {
                   <div className="flex items-center">
                     {/* Decrease button */}
                     <button
-                      onClick={() => handleQuantityChange(product._id, 'decrease')}
+                      onClick={() => handleQuantityChange(product._id, "decrease")}
                       className="rounded-sm border border-black px-3 py-1 text-xs font-medium text-black transition hover:border-gray-700"
                     >
                       -
@@ -147,7 +169,7 @@ const Product = () => {
                     <span className="mx-3 text-lg text-gray-800">{quantities[product._id] || 1}</span>
                     {/* Increase button */}
                     <button
-                      onClick={() => handleQuantityChange(product._id, 'increase')}
+                      onClick={() => handleQuantityChange(product._id, "increase")}
                       className="rounded-sm border border-black px-3 py-1 text-xs font-medium text-black transition hover:border-gray-700"
                     >
                       +
@@ -156,7 +178,7 @@ const Product = () => {
                 </div>
                 <button
                   onClick={() => addToCart(product._id, quantities[product._id] || 1)}
-                  className="ml-[30%] mt-4 rounded-sm bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
+                  className="ml-[30%] mt-4 rounded-sm bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-black"
                 >
                   Add to Tray
                 </button>

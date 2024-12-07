@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Homepage/main-dashboard";
 import { Button } from "./components/ui/layout/button";
-import SignIn from "./pages/Login/SignIn";
-import SignUp from "./pages/Register/SignUp";
 import Product from "./pages/Products/Product";
 import ShoppingCart from "./pages/Cart/ShoppingCart";
 import ProductAdmin from "./pages/Admin/ProductAdmin";
@@ -14,6 +12,8 @@ import ProfileUser from "./pages/Profile/ProfileUser";
 import OrderHistory from "./pages/Payment/OrderHistory";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminRegister from "./pages/Admin/AdminRegister";
+import UserLogin from "./pages/Login/UserLogin";
+import UserRegister from "./pages/Register/UserRegister";
 
 const App = () => {
   return (
@@ -26,8 +26,8 @@ const App = () => {
           path="button"
           element={<Button>Click me</Button>} // Add text inside the button here
         />
-        <Route path="Login" element={<SignIn />} />
-        <Route path="Register" element={<SignUp />} />
+        <Route path="Login" element={<UserLogin />} />
+        <Route path="Register" element={<UserRegister />} />
         <Route path="ProductAdmin" element={<ProductAdmin />} />
         <Route path="Category" element={<Category />} />
         <Route path="Orders" element={<Orders />} />
