@@ -20,6 +20,7 @@ interface OrderData {
       price: number;
       image?: string | null; // Product image
     };
+    quantity: number; // Product quantity
   }[];
   totalAmount: number; // Total amount of the order
   orderStatus: string;
@@ -125,7 +126,7 @@ const Orders = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Status: {order.orderStatus}</p>
-                      <p className="text-sm font-medium">Total: ₱{order.totalAmount.toFixed(2)}</p>
+                      <p className="text-sm font-medium">Total: ₱{order.totalAmount}</p>
                     </div>
                   </div>
 
@@ -137,6 +138,9 @@ const Orders = () => {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                           Price
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                          Quantity
                         </th>
                       </tr>
                     </thead>
@@ -153,6 +157,9 @@ const Orders = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                             ₱{item.product.price.toFixed(2)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                            {item.quantity}
                           </td>
                         </tr>
                       ))}
