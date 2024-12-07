@@ -33,20 +33,37 @@ const ProfileUser: React.FC = () => {
           username: profileData.username,
           email: profileData.email,
         });
-        console.log(profileData)
 
         // Assuming the profile data includes an image URL
         if (profileData.profileImage) {
           setProfileImage(profileData.profileImage);
         }
       } else {
-        console.log("Token:", token); // Debugging log
         throw new Error("Invalid response format");
       }
     } catch (error) {
       console.error(error);
     }
   };
+
+  const editProfile = async () => {
+    try {
+      const endpoint = "/user/updateprofile";
+      if (!token) throw new Error("Token not found");
+
+      const method = "PUT";
+      const body = { username: formData.username, email: formData.email };
+      const response = await dataFetch(endpoint, method, body, token);
+
+      if (response && typeof response === "object" && "message" in response) {
+        console.log("Profile updated successfully");
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   // Handle profile image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +86,10 @@ const ProfileUser: React.FC = () => {
   // Toggle edit mode
   const toggleEditMode = () => {
     setIsEditing((prev) => !prev);
+    if (isEditing) {
+      // When switching to view mode, save changes
+      editProfile();
+    }
   };
 
   return (
@@ -110,17 +131,17 @@ const ProfileUser: React.FC = () => {
               />
             </div>
 
-            {/* Name Input */}
+            {/* Username Input */}
             <div className="mb-4">
               <label
-                htmlFor="name"
+                htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Your name
+                Username
               </label>
               <input
                 type="text"
-                id="name"
+                id="username"
                 value={formData.username}
                 onChange={handleInputChange}
                 readOnly={!isEditing}
@@ -149,7 +170,6 @@ const ProfileUser: React.FC = () => {
                 }`}
               />
             </div>
-
 
             {/* Action Buttons */}
             <div className="text-right">

@@ -19,6 +19,7 @@ const ProfileAdmin: React.FC = () => {
       const response = await dataFetch("admin/myprofile", "GET", {}, token!);
       const userData = (response as { data: { name: string; email: string } }).data;
       setFormData({ ...userData, password: formData.password });
+      console.log("User data:", userData);
     } catch (error) {
       console.error("Fetch user data error:", error);
     }
@@ -48,7 +49,22 @@ const ProfileAdmin: React.FC = () => {
 
   // Toggle edit mode
   const toggleEditMode = () => {
+    if (isEditing) {
+      // Save profile changes when toggling off edit mode
+      editProfile();
+    }
     setIsEditing((prev) => !prev);
+  };
+
+  // Edit the profile
+  const editProfile = async () => {
+    try {
+      const response = await dataFetch("/admin/updateprofile", "PUT", formData, token!);
+      console.log("Edit profile response:", response);
+      // After editing, optionally you could refetch data or show a success message.
+    } catch (error) {
+      console.error("Edit profile error:", error);
+    }
   };
 
   return (
@@ -95,10 +111,7 @@ const ProfileAdmin: React.FC = () => {
 
             {/* Name Input */}
             <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Your name
               </label>
               <input
@@ -115,10 +128,7 @@ const ProfileAdmin: React.FC = () => {
 
             {/* Email Input */}
             <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email
               </label>
               <input
@@ -135,10 +145,7 @@ const ProfileAdmin: React.FC = () => {
 
             {/* Password Display */}
             <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
