@@ -159,6 +159,7 @@ const ProductAdmin = () => {
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="px-6 py-3 text-left">#</th>
+                      <th className="px-6 py-3 text-left">Image</th> {/* New Column */}
                       <th className="px-6 py-3 text-left">Product Name</th>
                       <th className="px-6 py-3 text-left">Category</th>
                       <th className="px-6 py-3 text-left">Price</th>
@@ -170,21 +171,42 @@ const ProductAdmin = () => {
                       products.map((product, index) => (
                         <tr key={product._id} className="hover:bg-gray-50 transition">
                           <td className="px-6 py-4">{index + 1}</td>
+                          <td className="px-6 py-4">
+                            {product.image ? (
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                className="h-12 w-12 object-cover rounded"
+                              />
+                            ) : (
+                              <span className="text-gray-400">No Image</span>
+                            )}
+                          </td>
                           <td className="px-6 py-4">{product.name}</td>
                           <td className="px-6 py-4">{product.category?.categoryName || "Category"}</td>
                           <td className="px-6 py-4">₱{product.price.toFixed(2)}</td>
                           <td className="px-6 py-4 text-center">
-                            <button onClick={() => toggleEditModal(product)} className="text-green-500">Edit</button>
-                            <button onClick={() => toggleDeleteModal(product._id)} className="text-red-500 ml-2">Delete</button>
+                            <button onClick={() => toggleEditModal(product)} className="text-green-500">
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => toggleDeleteModal(product._id)}
+                              className="text-red-500 ml-2"
+                            >
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={7} className="text-center py-4">No products found.</td>
+                        <td colSpan={7} className="text-center py-4">
+                          No products found.
+                        </td>
                       </tr>
                     )}
                   </tbody>
+
                 </table>
               )}
             </div>
