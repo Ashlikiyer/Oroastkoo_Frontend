@@ -174,7 +174,7 @@ const ShoppingCart = () => {
                       <Link to={`/product/${item.product._id}`} className="shrink-0 md:order-1">
                         <img
                           className="h-20 w-20"
-                          src={item.product.image || productPic}
+                          src={(item.product?.image) || productPic}
                           alt={item.product.name}
                         />
                       </Link>
