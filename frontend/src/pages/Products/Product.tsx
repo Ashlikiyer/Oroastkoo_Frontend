@@ -145,7 +145,7 @@ const Product = () => {
               <div className="relative h-40 w-72 rounded-lg overflow-hidden bg-gray-100">
                 <img
                   className="mx-auto h-full transition-transform duration-300 ease-in-out hover:scale-110"
-                  src={product.image || productPic}
+                src={(product?.image) || productPic}
                   alt={product.name}
                 />
               </div>

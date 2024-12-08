@@ -4,6 +4,7 @@ import EditOrder from "@/components/Admin/EditOrder";
 import { useEffect, useState } from "react";
 import dataFetch from "@/services/data-services";
 import DeleteOrder from "@/components/Admin/DeleteOrder";
+import imagePlaceHoler from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png"
 
 interface OrderData {
   id: string;
@@ -149,14 +150,14 @@ const Orders = () => {
                         <tr key={itemIndex} className="hover:bg-gray-50 transition duration-200">
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
                             <img
-                              src={item.product.image || "/images/placeholder.png"}
-                              alt={item.product.name}
+                              src={(item.product?.image) || imagePlaceHoler}
+                              alt={item.product?.name || "Unknown Product"}
                               className="w-10 h-10 rounded-full object-cover mr-2"
                             />
-                            {item.product.name}
+                            {item.product?.name || "Unknown Product"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            ₱{item.product.price.toFixed(2)}
+                            ₱{item.product?.price?.toFixed(2) || "0.00"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                             {item.quantity}

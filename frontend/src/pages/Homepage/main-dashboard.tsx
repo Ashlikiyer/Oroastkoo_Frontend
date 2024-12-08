@@ -216,7 +216,7 @@ const Home = () => {
                     <Card className="shadow-lg transform transition duration-500 hover:scale-105">
                       <div className="relative h-48 w-full rounded-t-lg overflow-hidden bg-gray-100">
                         <img
-                          src={product.image}
+                          src={(product?.image) || productPic}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />

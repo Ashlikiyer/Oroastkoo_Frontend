@@ -3,6 +3,7 @@ import HeaderMain from "@/components/ui/HeaderMain";
 import { Link } from "react-router-dom";
 import Footer from "@/components/ui/Footer";
 import dataFetch from "@/services/data-services";
+import imagePlaceHoler from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
 
 const Checkout = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -116,12 +117,12 @@ const Checkout = () => {
                         <div className="flex items-center space-x-4">
                           {/* Product Image */}
                           <img 
-                            src={item.product.image} 
-                            alt={item.product.name} 
+                            src={(item.product?.image) || imagePlaceHoler} 
+                            alt={(item.product?.name) || "unknown product"} 
                             className="w-16 h-16 object-cover rounded"
                           />
                           {/* Product Name */}
-                          <span className="text-gray-700">{item.product.name}</span>
+                          <span className="text-gray-700">{(item.product?.name) || "unknown product"}</span>
                           {/* Product Quantity */}
                           <span className="text-sm text-gray-500">x{item.quantity}</span>
                         </div>
