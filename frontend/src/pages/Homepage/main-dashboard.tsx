@@ -159,7 +159,6 @@ const Home = () => {
           <BreadCrumbs />
         </div>
       </section>
-
       {/* Top Selling Section */}
       <section className="top-selling">
         <div className="promo-banner dark:text-white font-bold font-poppins mb-7 mt-9">
@@ -173,24 +172,45 @@ const Home = () => {
           </div>
         </div>
       </section>
-
       {/* Categories */}
       <section className="category-section">
-        <h2 className="section-title dark:text-white font-bold font-poppins mb-7 mt-9 ml-20">
-          Category
-        </h2>
-        <div className="category-buttons flex justify-center space-x-4 font-poppins">
-          {categories.map((category) => (
-            <button
-              key={category._id}
-              onClick={() => setSelectedCategory(category._id)}
-              className="text-white bg-[#E61525] focus:ring-4 focus:ring-red-300 font-bold rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            >
-              {category.categoryName}
-            </button>
-          ))}
-        </div>
-      </section>
+  <h2 className="section-title dark:text-white font-bold font-poppins mb-7 mt-9 ml-20">
+    Category
+  </h2>
+  <div className="category-buttons flex flex-wrap justify-center space-x-4 font-poppins">
+    {/* "All" button to reset the category filter */}
+    <button
+      onClick={() => setSelectedCategory(null)}
+      className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
+        selectedCategory === null ? "opacity-75" : ""
+      }`}
+    >
+      All
+    </button>
+    {/* Dynamically render buttons based on product categories */}
+    {Array.from(
+      new Set(products.map((product) => product.category._id)) // Extract unique category IDs
+    ).map((categoryId) => {
+      // Find the corresponding category name
+      const category = products.find((product) => product.category._id === categoryId)?.category;
+
+      return (
+        <button
+          key={categoryId}
+          onClick={() => setSelectedCategory(categoryId)}
+          className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
+            selectedCategory === categoryId ? "opacity-75" : ""
+          }`}
+        >
+          {category?.categoryName || "Unknown Category"}
+        </button>
+      );
+    })}
+  </div>
+</section>
+
+
+
 
       {/* Products */}
       <section className="product-section">
@@ -214,11 +234,11 @@ const Home = () => {
                 >
                   <div className="p-4">
                     <Card className="shadow-lg transform transition duration-500 hover:scale-105">
-                      <div className="relative h-48 w-full rounded-t-lg overflow-hidden bg-gray-100">
+                      <div className="relative h-56 w-full rounded-t-lg overflow-hidden bg-gray-100">
                         <img
-                          src={(product?.image) || productPic}
+                          src={product?.image || productPic}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                       <CardContent className="p-4">
@@ -279,7 +299,6 @@ const Home = () => {
           </Carousel>
         </div>
       </section>
-
       {!isLoading && <Footer />}
     </div>
   );

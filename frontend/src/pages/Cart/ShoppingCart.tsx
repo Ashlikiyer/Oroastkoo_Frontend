@@ -168,8 +168,8 @@ const ShoppingCart = () => {
                       <input
                         type="checkbox"
                         className="mr-4"
-                        checked={selectedItems.includes(item.product._id)}
-                        onChange={() => toggleSelectItem(item.product._id)}
+                        checked={selectedItems.includes((item.product?._id) || "")}
+                        onChange={() => toggleSelectItem((item.product?._id) || "")}
                       />
                       <Link to={`/product/${item.product._id}`} className="shrink-0 md:order-1">
                         <img

@@ -14,6 +14,7 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminRegister from "./pages/Admin/AdminRegister";
 import UserLogin from "./pages/Login/UserLogin";
 import UserRegister from "./pages/Register/UserRegister";
+import { Analytics } from "./pages/Admin/Analytics";
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
         <Route path="ProfileUser" element={<ProfileUser/>} />
         <Route path="AdminLogin" element={<AdminLogin/>} />
         <Route path="AdminRegister" element={<AdminRegister/>} />
+        <Route path="Analytics" element={<Analytics/>} />
 
       </Routes>
     </BrowserRouter>
