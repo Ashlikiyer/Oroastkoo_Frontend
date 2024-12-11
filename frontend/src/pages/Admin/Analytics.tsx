@@ -78,7 +78,7 @@ export function Analytics() {
               <div className="bg-white p-4 rounded-lg shadow">
                 <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
                 <p className="mt-1 text-xl font-semibold text-gray-900">
-                  ${analytics.totalEarnings.toFixed(2)}
+                  ₱{analytics.totalEarnings.toFixed(2)}
                 </p>
               </div>
 
@@ -107,10 +107,10 @@ export function Analytics() {
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `₱${value}`}
                   />
                   {/* Tooltip for Hover Effect */}
-                  <Tooltip formatter={(value) => `$${value}`} />
+                  <Tooltip formatter={(value) => `₱${value}`} />
                   <Bar
                     dataKey="total"
                     fill="currentColor"

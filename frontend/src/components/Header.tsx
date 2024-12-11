@@ -24,13 +24,13 @@ const Header = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
               {/* Logo */}
-              <a href="/" className="flex items-center">
+              <Link to="/" className="flex items-center">
                 <img
                   src="src/images/Oroastko.svg"
                   alt="Oroastko Logo"
                   className="h-10 mr-4"
                 />
-              </a>
+              </Link>
             </div>
             <div className="relative flex items-center ms-3">
               {/* Button Dropdown */}
