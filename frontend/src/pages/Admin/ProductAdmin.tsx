@@ -51,7 +51,7 @@ const ProductAdmin = () => {
     try {
       const response = await dataFetch("/admin/products/products", "GET", {}, getToken());
       const productsData = (response as { data: ProductData[] }).data;
-      setProducts(productsData);
+      setProducts(productsData.reverse());
   
       // Extract unique categories from products
       const categorySet = new Set(productsData.map(product => product.category?.categoryName).filter(Boolean));

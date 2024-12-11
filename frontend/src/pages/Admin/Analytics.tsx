@@ -1,20 +1,8 @@
 "use client";
-
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import Sidebar from "@/components/ui/Sidebar";
 import Header from "@/components/Header";
-import { useEffect, useState } from "react";
-
-type MonthlyEarnings = {
-  month: number;
-  earnings: number;
-};
-
-type AnalyticsData = {
-  totalEarnings: number;
-  totalOrders: number;
-  monthlyEarnings: MonthlyEarnings[];
-};
+import RevenueAnalytics from "@/components/Admin/RevenueAnalytics";
+import { BestSellerAnalytics } from "@/components/Admin/BestSellerAnalytics";
 
 export function Analytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
@@ -56,7 +44,7 @@ export function Analytics() {
   }));
 
   return (
-    <div className="flex">
+    <div className="flex bg-blue-50">
       {/* Sidebar */}
       <Sidebar />
 
@@ -66,60 +54,12 @@ export function Analytics() {
         <Header />
 
         {/* Analytics Content */}
-        <div className="bg-blue-50 min-h-screen p-5 sm:p-20">
-          <div className="max-w-5xl ml-40 mt-15">
-            {/* Analytics Title */}
-            <div className="mb-3">
-              <h1 className="text-3xl font-bold text-gray-700">Analytics</h1>
-            </div>
-
-            {/* Statistics Section */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
-                <p className="mt-1 text-xl font-semibold text-gray-900">
-                  ₱{analytics.totalEarnings.toFixed(2)}
-                </p>
-              </div>
-
-              <div className="bg-white p-4 rounded-lg shadow">
-                <h3 className="text-sm font-medium text-gray-500">Total Orders</h3>
-                <p className="mt-1 text-xl font-semibold text-gray-900">
-                  {analytics.totalOrders}
-                </p>
-              </div>
-            </div>
-
-            {/* Bar Chart Section */}
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-sm font-medium text-gray-500">Monthly Earnings</h3>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={chartData}>
-                  <XAxis
-                    dataKey="name"
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `₱${value}`}
-                  />
-                  {/* Tooltip for Hover Effect */}
-                  <Tooltip formatter={(value) => `₱${value}`} />
-                  <Bar
-                    dataKey="total"
-                    fill="currentColor"
-                    radius={[4, 4, 0, 0]}
-                    className="fill-primary"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="flex flex-wrap gap-4 px-4">
+          <div className="flex-1">
+            <RevenueAnalytics />
+          </div>
+          <div className="flex-1">
+            <BestSellerAnalytics />
           </div>
         </div>
       </div>
