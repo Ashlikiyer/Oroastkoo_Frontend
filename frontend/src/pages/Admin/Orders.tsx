@@ -157,7 +157,7 @@ const Orders = () => {
                             {item.product?.name || "Unknown Product"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            ₱{item.product?.price?.toFixed(2) || "0.00"}
+                          ₱{item.product?.price?.toFixed(2) || "0.00"}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                             {item.quantity}

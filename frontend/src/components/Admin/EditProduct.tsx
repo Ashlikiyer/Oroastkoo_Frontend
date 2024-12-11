@@ -43,6 +43,7 @@ const EditProduct: React.FC<EditProductProps> = ({
     setCategory(productData.category._id);
     setPrice(productData.price);
     setImage(productData.image || null);
+    console.log(productData);
   }, [productData]);
 
   console.log(productData);

@@ -128,7 +128,7 @@ const Checkout = () => {
                         </div>
                         {/* Product Price */}
                         <span className="text-gray-800 font-semibold">
-                          ₱{(item.price * item.quantity).toFixed(2)}
+                        ₱{(item.price * item.quantity).toFixed(2)}
                         </span>
                       </li>
                     ))}
@@ -136,7 +136,7 @@ const Checkout = () => {
                   <li className="flex justify-between items-center py-4">
                     <strong className="text-lg text-gray-800">Order Total</strong>
                     <strong className="text-lg text-gray-900">
-                      ₱{orderTotals[index]?.toFixed(2)}
+                    ₱{orderTotals[index]?.toFixed(2)}
                     </strong>
                   </li>
                   <div className="text-right">

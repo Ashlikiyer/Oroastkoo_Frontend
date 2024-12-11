@@ -120,15 +120,15 @@ const ShoppingCart = () => {
 
   const onIncrease = (item: CartItem) => {
     const newQuantity = item.quantity + 1;
-    updateCartItems(item.product._id, newQuantity);
+    updateCartItems(item.product?._id, newQuantity);
   };
 
   const onDecrease = (item: CartItem) => {
     if (item.quantity > 1) {
       const newQuantity = item.quantity - 1;
-      updateCartItems(item.product._id, newQuantity);
+      updateCartItems(item.product?._id, newQuantity);
     } else {
-      deleteItem(item.product._id);
+      deleteItem(item.product?._id);
     }
   };
 
@@ -144,8 +144,8 @@ const ShoppingCart = () => {
 
   const calculateTotal = () =>
     cartItems
-      .filter((item) => selectedItems.includes(item.product._id))
-      .reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+      .filter((item) => selectedItems.includes(item.product?._id))
+      .reduce((acc, item) => acc + item.product?.price * item.quantity, 0);
 
   return (
     <div className="cart-container">
@@ -171,19 +171,19 @@ const ShoppingCart = () => {
                         checked={selectedItems.includes((item.product?._id) || "")}
                         onChange={() => toggleSelectItem((item.product?._id) || "")}
                       />
-                      <Link to={`/product/${item.product._id}`} className="shrink-0 md:order-1">
+                      <Link to={`/product/${item.product?._id}`} className="shrink-0 md:order-1">
                         <img
                           className="h-20 w-20"
                           src={(item.product?.image) || productPic}
-                          alt={item.product.name}
+                          alt={item.product?.name}
                         />
                       </Link>
                       <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
                         <Link
-                          to={`/product/${item.product._id}`}
+                          to={`/product/${item.product?._id}`}
                           className="text-base font-medium ml-2 text-gray-900 hover:underline dark:text-white"
                         >
-                          {item.product.name}
+                          {item.product?.name}
                         </Link>
                       </div>
                       <div className="flex items-center justify-between md:order-3 md:justify-end">
@@ -210,7 +210,7 @@ const ShoppingCart = () => {
                         <div className="flex items-center gap-4 ml-4">
                           <button
                             type="button"
-                            onClick={() => deleteItem(item.product._id)}
+                            onClick={() => deleteItem(item.product?._id)}
                             className="inline-flex text-sm font-medium text-red-600 hover:underline dark:text-red-500"
                           >
                             Remove
@@ -218,7 +218,7 @@ const ShoppingCart = () => {
                         </div>
                         <div className="text-end md:order-4 md:w-32">
                           <p className="text-base font-bold text-gray-900 dark:text-white">
-                            ₱{item.product.price}
+                            ₱{item.product?.price}
                           </p>
                         </div>
                       </div>
@@ -237,15 +237,15 @@ const ShoppingCart = () => {
                 </p>
                 <div className="space-y-2">
                   {cartItems
-                    .filter((item) => selectedItems.includes(item.product._id))
+                    .filter((item) => selectedItems.includes(item.product?._id))
                     .map((item) => (
                       <div
-                        key={item.product._id}
+                        key={item.product?._id}
                         className="flex justify-between text-gray-900 dark:text-white"
                       >
-                        <span>{item.product.name}</span>
+                        <span>{item.product?.name}</span>
                         <span>
-                          {item.quantity} x ₱{item.product.price}
+                          {item.quantity} x ₱{item.product?.price}
                         </span>
                       </div>
                     ))}
