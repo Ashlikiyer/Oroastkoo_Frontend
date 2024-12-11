@@ -24,17 +24,21 @@ interface ImageManagerProps {
 const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
   const [images, setImages] = useState<Image[]>([]);
   const [newImage, setNewImage] = useState<File | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // State for controlling dialog visibility
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch images from API
   const fetchImages = async () => {
     try {
-      const endRoute = "/admin/image/getImage";
-      const token = localStorage.getItem("adminToken");
-      const response = await dataFetch(endRoute, "GET", {}, token!);
-      setImages((response as { data: Image[] }).data);
+      const endRoute = '/admin/image/getImage';
+      const token = localStorage.getItem('adminToken');
+      const response = await dataFetch(endRoute, 'GET', {}, token!);
+      const fetchedImages = (response as { data: Image[] }).data;
+
+      // Sort images by ID for consistent display
+      const sortedImages = fetchedImages.sort((a, b) => a._id.localeCompare(b._id));
+      setImages(sortedImages);
     } catch (error) {
-      console.error("Error fetching images:", error);
+      console.error('Error fetching images:', error);
     }
   };
 
@@ -46,17 +50,22 @@ const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
       const formData = new FormData();
       formData.append('image', newImage);
 
-      const endRoute = "/admin/image/addImage";
-      const token = localStorage.getItem("adminToken");
-      const response = await dataFetch(endRoute, "POST", formData, token!);
+      const endRoute = '/admin/image/addImage';
+      const token = localStorage.getItem('adminToken');
+      const response = await dataFetch(endRoute, 'POST', formData, token!) as { data: Image };
 
-      // Fetch updated image list after adding the new image
+      // Add the new image to the state optimistically
+      const newImageData: Image = response.data;
+      setImages((prevImages) => [...prevImages, newImageData]);
+
+      // Fetch updated image list from the backend
       fetchImages();
 
-      // Close the dialog after successfully adding the image
-      setIsDialogOpen(false); // Close the dialog
+      // Clear the input and close dialog
+      setNewImage(null);
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error("Error adding image:", error);
+      console.error('Error adding image:', error);
     }
   };
 
@@ -64,25 +73,22 @@ const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
   const deleteImage = async (imageId: string) => {
     try {
       const endRoute = `/admin/image/deleteImage/${imageId}`;
-      const token = localStorage.getItem("adminToken");
-      const response = await dataFetch(endRoute, "DELETE", {}, token!);
-      console.log("Image deleted:", response);
-      fetchImages();
+      const token = localStorage.getItem('adminToken');
+      await dataFetch(endRoute, 'DELETE', {}, token!);
+
+      // Update the state after deletion
+      setImages((prevImages) => prevImages.filter((image) => image._id !== imageId));
     } catch (error) {
-      console.error("Error deleting image:", error);
+      console.error('Error deleting image:', error);
     }
   };
 
   const selectImage = (imageId: string) => {
-    // Find the image by id
     const selectedImage = images.find((image) => image._id === imageId);
-  
-    // If found, pass it to the parent component via setImage
+
     if (selectedImage) {
-      const imageFile = selectedImage.productImage; 
-      setImage(imageFile); // Pass the image URL
-      console.log("Selected image:", selectedImage);
-      onclose(); // Close the dialog
+      setImage(selectedImage.productImage);
+      onclose();
     }
   };
 
@@ -95,7 +101,9 @@ const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
       {/* Add Image Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" onClick={() => setIsDialogOpen(true)}>Add New Image</Button>
+          <Button variant="outline" onClick={() => setIsDialogOpen(true)}>
+            Add New Image
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -119,11 +127,7 @@ const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
             </div>
           </div>
           <DialogFooter>
-            <Button
-              type="button"
-              onClick={addImage}
-              className="bg-green-500"
-            >
+            <Button type="button" onClick={addImage} className="bg-green-500">
               Add Image
             </Button>
           </DialogFooter>
@@ -131,16 +135,17 @@ const ImageManager: React.FC<ImageManagerProps> = ({ setImage, onclose }) => {
       </Dialog>
 
       <h2 className="text-xl font-semibold mb-4">Manage Images</h2>
-      <div className="grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
+      {/* Scrollable image container */}
+      <div className="grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh] border p-4 rounded-md">
         {images.map((image) => (
           <div
             key={image._id}
-            className="relative group w-full h-64 max-h-[100px] overflow-hidden bg-gray-200"
+            className="relative group w-full h-64 overflow-hidden bg-gray-200 rounded-md"
           >
             <img
               src={image.productImage}
               alt={`Image ${image._id}`}
-              className="w-full h-full object-contain rounded-md"
+              className="w-full h-full object-contain"
             />
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-0 group-hover:opacity-50 flex justify-center items-center transition-opacity">
               <div className="flex gap-2">
