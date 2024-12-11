@@ -76,7 +76,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) 
 
       console.log("Payload:", payload);
 
-      const endPoint = "/admin/products/addproducts";
+      const endPoint = "/admin/products/addproducts/";
       const method = "POST";
       const token = localStorage.getItem("adminToken");
 
