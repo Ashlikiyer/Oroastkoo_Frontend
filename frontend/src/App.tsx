@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Homepage/main-dashboard";
-import { Button } from "./components/ui/layout/button";
 import Product from "./pages/Products/Product";
 import ShoppingCart from "./pages/Cart/ShoppingCart";
 import ProductAdmin from "./pages/Admin/ProductAdmin";
@@ -16,31 +15,114 @@ import UserLogin from "./pages/Login/UserLogin";
 import UserRegister from "./pages/Register/UserRegister";
 import { Analytics } from "./pages/Admin/Analytics";
 
+import { ReactNode } from "react";
+
+const PrivateRoute = ({ children, admin }: { children: ReactNode; admin?: boolean }) => {
+  const token = admin ? localStorage.getItem("adminToken") : localStorage.getItem("userToken");
+  return token ? children : <Navigate to={admin ? "/AdminLogin" : "/Login"} />;
+};
+
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="Product" element={<Product />} />
-        <Route path="Cart" element={<ShoppingCart />} />
-        <Route
-          path="button"
-          element={<Button>Click me</Button>} // Add text inside the button here
-        />
-        <Route path="Login" element={<UserLogin />} />
-        <Route path="Register" element={<UserRegister />} />
-        <Route path="ProductAdmin" element={<ProductAdmin />} />
-        <Route path="Category" element={<Category />} />
-        <Route path="Orders" element={<Orders />} />
-        <Route path="ProfileAdmin" element={<ProfileAdmin />} />
-        <Route path="ProfileUser" element={<ProfileUser />} />
-        <Route path="Checkout" element={<Checkout/>} />
-        <Route path="OrderHistory" element={<OrderHistory/>} />
-        <Route path="ProfileUser" element={<ProfileUser/>} />
-        <Route path="AdminLogin" element={<AdminLogin/>} />
-        <Route path="AdminRegister" element={<AdminRegister/>} />
-        <Route path="Analytics" element={<Analytics/>} />
+        {/* Public Routes */}
+        <Route path="/Login" element={<UserLogin />} />
+        <Route path="/Register" element={<UserRegister />} />
+        <Route path="/AdminLogin" element={<AdminLogin />} />
+        <Route path="/AdminRegister" element={<AdminRegister />} />
 
+        {/* Private Routes for Users */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Product"
+          element={
+            <PrivateRoute>
+              <Product />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Cart"
+          element={
+            <PrivateRoute>
+              <ShoppingCart />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ProfileUser"
+          element={
+            <PrivateRoute>
+              <ProfileUser />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Checkout"
+          element={
+            <PrivateRoute>
+              <Checkout />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/OrderHistory"
+          element={
+            <PrivateRoute>
+              <OrderHistory />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Private Routes for Admins */}
+        <Route
+          path="/ProductAdmin"
+          element={
+            <PrivateRoute admin>
+              <ProductAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Category"
+          element={
+            <PrivateRoute admin>
+              <Category />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Orders"
+          element={
+            <PrivateRoute admin>
+              <Orders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ProfileAdmin"
+          element={
+            <PrivateRoute admin>
+              <ProfileAdmin />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/Analytics"
+          element={
+            <PrivateRoute admin>
+              <Analytics />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

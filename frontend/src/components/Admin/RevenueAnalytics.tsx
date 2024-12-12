@@ -77,7 +77,7 @@ export function RevenueAnalytics() {
         <div className="grid grid-cols-2 gap-4 mb-6">
           <Card>
             <CardContent>
-              <h3 className="text-sm font-medium text-gray-500">Total Revenue</h3>
+              <h3 className="text-sm mt-4 -mb-2 font-medium text-gray-500">Total Revenue</h3>
               <p className="mt-1 text-xl font-semibold text-gray-900">
               ₱{Number(revenue?.totalEarnings || 0)}
               </p>
@@ -86,7 +86,7 @@ export function RevenueAnalytics() {
 
           <Card>
             <CardContent>
-              <h3 className="text-sm font-medium text-gray-500">Sales</h3>
+              <h3 className="text-sm mt-4 -mb-2 font-medium text-gray-500">Sales</h3>
               <p className="mt-1 text-xl font-semibold text-gray-900">
                 {Number(revenue?.totalOrders || 0)}
               </p>
@@ -95,7 +95,7 @@ export function RevenueAnalytics() {
         </div>
 
         {/* Area Chart Section */}
-        <Card>
+        <Card >
           <CardHeader>
             <CardTitle>Revenue Overview</CardTitle>
             <CardDescription>
