@@ -14,6 +14,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) 
   const [price, setPrice] = useState<number>(0);
   const [image, setImage] = useState<string | null>("");  // Image state for the selected image
   const [category, setCategory] = useState<string>("");
+  const [cookingTime, setCookingTime] = useState<string>(""); // State for cooking time
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
 
@@ -66,6 +67,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) 
       const payload = {
         name,
         price,
+        cookingTime, // Add cooking time to payload
         stock_quantity: 505, // Set this dynamically if needed
         image, // Passing the image URL directly
         category: {
@@ -107,6 +109,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) 
     setName("");
     setCategory("");
     setPrice(0);
+    setCookingTime(""); // Reset cooking time
     setImage("");  // Reset the image URL
     toggleModal();
   };
@@ -187,6 +190,20 @@ const CreateProduct: React.FC<CreateProductProps> = ({ toggleModal, callback }) 
                   placeholder="₱0.00"
                   value={price}
                   onChange={(e) => setPrice(Number(e.target.value))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Cooking Time (e.g., 15 minutes)
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-3 border rounded-lg bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
+                  placeholder="Cooking time"
+                  value={cookingTime}
+                  onChange={(e) => setCookingTime(e.target.value)}
                   required
                 />
               </div>

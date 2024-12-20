@@ -1,18 +1,25 @@
 import dataFetch from "@/services/data-services";
 import React, { useState } from "react";
 
-// Define the props type for the component
 interface CreateCategoryProps {
-  toggleModal: () => void; // Explicitly define the type of toggleModal
-  callback: () => void; // callback function to update the category list
+  toggleModal: () => void;
+  callback: () => void;
+  checkCategoryExists: (categoryName: string) => boolean; // Function passed as prop to check for duplicate
 }
 
-const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }) => {
+const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback, checkCategoryExists }) => {
   const [categoryName, setCategoryName] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Function to handle form submission
   const CreateCategory = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    // Check if the category name already exists
+    if (checkCategoryExists(categoryName)) {
+      setErrorMessage("Category name already exists. Please choose a different name.");
+      return; // Do not submit the form if category exists
+    }
+
     try {
       const endpoint = "/admin/category/addCategory";
       const token = localStorage.getItem("adminToken");
@@ -21,32 +28,25 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }
       const response = await dataFetch(endpoint, method, { categoryName: categoryName }, token);
       console.log(response);
       handleCallback();
-      handleClose(); // Call the callback function to update the category list
-    }
-    catch (error) {
+      handleClose();
+    } catch (error) {
       console.error(error);
     }
-  
   };
 
   const handleCallback = () => {
-    callback(); // Call the callback function to update the category list
+    callback();
   };
-    
 
-  // Function to close the modal and reset the form
   const handleClose = () => {
     setCategoryName("");
-    toggleModal(); // Close the modal using the prop
+    toggleModal();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 p-4">
       <div className="relative p-6 w-full max-w-sm bg-white rounded-lg shadow-xl">
-        <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-          onClick={handleClose}
-        >
+        <button className="absolute top-4 right-4 text-gray-500 hover:text-gray-700" onClick={handleClose}>
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -59,9 +59,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }
 
         <form onSubmit={CreateCategory}>
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Category name
-            </label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Category name</label>
             <input
               type="text"
               className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800"
@@ -72,6 +70,8 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }
             />
           </div>
 
+          {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+
           <div className="flex justify-end space-x-2">
             <button
               type="button"
@@ -80,10 +80,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ toggleModal, callback }
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-black text-white rounded-lg"
-            >
+            <button type="submit" className="px-4 py-2 bg-black text-white rounded-lg">
               Add
             </button>
           </div>

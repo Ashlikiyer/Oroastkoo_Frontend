@@ -18,9 +18,7 @@ const Category = () => {
   const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [currentCategory, setCurrentCategory] = useState<CategoryData | null>(
-    null
-  );
+  const [currentCategory, setCurrentCategory] = useState<CategoryData | null>(null);
 
   const toggleCategoryModal = () => {
     setIsCategoryModalOpen(!isCategoryModalOpen);
@@ -98,7 +96,6 @@ const Category = () => {
 
       const response = await dataFetch(endpoint, method, {}, token);
 
-      // Check if the response format is valid
       if (
         response &&
         typeof response === "object" &&
@@ -122,6 +119,10 @@ const Category = () => {
     }
   };
 
+  const checkCategoryExists = (newCategory: string) => {
+    return categoryData.some((category) => category.categoryName.toLowerCase() === newCategory.toLowerCase());
+  };
+
   return (
     <div className="flex">
       <Sidebar />
@@ -139,7 +140,6 @@ const Category = () => {
               </button>
             </div>
 
-            {/* Statistics */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
               <div className="bg-yellow-500 text-white rounded-lg p-4 shadow-lg">
                 <h2 className="text-xl font-semibold">Total Categories</h2>
@@ -147,39 +147,21 @@ const Category = () => {
               </div>
             </div>
 
-            {/* Category Table */}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                      #
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                      Category Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                      Date Added
-                    </th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category Name</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {categoryData.map((category, index) => (
-                    <tr
-                      key={category._id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {index + 1}
-                      </td>
+                    <tr key={category._id} className="hover:bg-gray-50 transition duration-200">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{index + 1}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {category.categoryName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {new Date(category.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                         <button
@@ -195,10 +177,7 @@ const Category = () => {
                           }}
                           className="ml-2 text-red-500 hover:text-red-700"
                         >
-                          <img
-                            src="src/images/icons8-delete.svg"
-                            alt="Delete"
-                          />
+                          <img src="src/images/icons8-delete.svg" alt="Delete" />
                         </button>
                       </td>
                     </tr>
@@ -210,11 +189,11 @@ const Category = () => {
         </div>
       </div>
 
-      {/* Modals */}
       {isCategoryModalOpen && (
         <CreateCategory
           callback={fetchCategories}
           toggleModal={toggleCategoryModal}
+          checkCategoryExists={checkCategoryExists} // Pass the check function to CreateCategory
         />
       )}
       {isEditCategoryModalOpen && currentCategory && (

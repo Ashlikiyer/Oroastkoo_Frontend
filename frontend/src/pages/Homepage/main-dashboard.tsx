@@ -174,44 +174,42 @@ const Home = () => {
       </section>
       {/* Categories */}
       <section className="category-section">
-  <h2 className="section-title dark:text-white font-bold font-poppins mb-7 mt-9 ml-20">
-    Category
-  </h2>
-  <div className="category-buttons flex flex-wrap justify-center space-x-4 font-poppins">
-    {/* "All" button to reset the category filter */}
-    <button
-      onClick={() => setSelectedCategory(null)}
-      className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
-        selectedCategory === null ? "opacity-75" : ""
-      }`}
-    >
-      All
-    </button>
-    {/* Dynamically render buttons based on product categories */}
-    {Array.from(
-      new Set(products.map((product) => product.category._id)) // Extract unique category IDs
-    ).map((categoryId) => {
-      // Find the corresponding category name
-      const category = products.find((product) => product.category._id === categoryId)?.category;
+        <h2 className="section-title dark:text-white font-bold font-poppins mb-7 mt-9 ml-20">
+          Category
+        </h2>
+        <div className="category-buttons flex flex-wrap justify-center space-x-4 font-poppins">
+          {/* "All" button to reset the category filter */}
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
+              selectedCategory === null ? "opacity-75" : ""
+            }`}
+          >
+            All
+          </button>
+          {/* Dynamically render buttons based on product categories */}
+          {Array.from(
+            new Set(products.map((product) => product.category._id)) // Extract unique category IDs
+          ).map((categoryId) => {
+            // Find the corresponding category name
+            const category = products.find(
+              (product) => product.category._id === categoryId
+            )?.category;
 
-      return (
-        <button
-          key={categoryId}
-          onClick={() => setSelectedCategory(categoryId)}
-          className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
-            selectedCategory === categoryId ? "opacity-75" : ""
-          }`}
-        >
-          {category?.categoryName || "Unknown Category"}
-        </button>
-      );
-    })}
-  </div>
-</section>
-
-
-
-
+            return (
+              <button
+                key={categoryId}
+                onClick={() => setSelectedCategory(categoryId)}
+                className={`text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 ${
+                  selectedCategory === categoryId ? "opacity-75" : ""
+                }`}
+              >
+                {category?.categoryName || "Unknown Category"}
+              </button>
+            );
+          })}
+        </div>
+      </section>
       {/* Products */}
       <section className="product-section">
         <h2 className="section-title dark:text-white font-bold font-poppins mb-7 mt-9 ml-20">
@@ -251,7 +249,7 @@ const Home = () => {
 
                         <div className="mt-3 flex items-center justify-between">
                           <p className="text-xl font-bold text-gray-900 dark:text-white">
-                          ₱{product.price.toFixed(2)}
+                            ₱{product.price.toFixed(2)}
                           </p>
                           <div className="flex items-center">
                             {/* Decrease button */}

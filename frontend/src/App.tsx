@@ -14,7 +14,7 @@ import AdminRegister from "./pages/Admin/AdminRegister";
 import UserLogin from "./pages/Login/UserLogin";
 import UserRegister from "./pages/Register/UserRegister";
 import { Analytics } from "./pages/Admin/Analytics";
-
+import Notification from "./pages/Notification/Notification";
 import { ReactNode } from "react";
 
 const PrivateRoute = ({ children, admin }: { children: ReactNode; admin?: boolean }) => {
@@ -58,6 +58,14 @@ const App = () => {
           }
         />
         <Route
+          path="/Notification"
+          element={
+            <PrivateRoute>
+              <Notification orders={[]} />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/ProfileUser"
           element={
             <PrivateRoute>
@@ -66,7 +74,7 @@ const App = () => {
           }
         />
         <Route
-          path="/Checkout"
+          path="/Orders"
           element={
             <PrivateRoute>
               <Checkout />

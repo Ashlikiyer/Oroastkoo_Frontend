@@ -50,10 +50,17 @@ const HeaderMain = () => {
 
         {/* Tray Icon and Sign In/Profile */}
         <div className="flex items-center space-x-4">
+          <Link to="/Notification" className="flex items-center -mb-1">
+            <img
+              src="src/images/icons8-notification (1).svg"
+              alt="Notification"
+              className="h-12 w-12"
+            />
+          </Link>
           <Link to="/Cart" className="flex items-center">
             <img
               src="src/images/tray-svgrepo-com 1.png"
-              alt="Tray"
+              alt="Cart"
               className="h-10 w-10"
             />
           </Link>
@@ -101,7 +108,7 @@ const HeaderMain = () => {
                   >
                     <li>
                       <Link
-                        to="/Checkout"
+                        to="/Orders"
                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         Order Summary

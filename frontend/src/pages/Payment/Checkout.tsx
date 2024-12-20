@@ -80,7 +80,7 @@ const Checkout = () => {
   };
 
   return (
-    <div className="flex-grow">
+    <div className="min-h-screen flex flex-col">
       <HeaderMain />
 
       <main className="flex-grow container mx-auto p-8 relative">
