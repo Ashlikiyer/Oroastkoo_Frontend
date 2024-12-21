@@ -127,6 +127,10 @@ const Checkout = () => {
                           {/* Product Quantity */}
                           <span className="text-sm text-gray-500">x{item.quantity}</span>
                         </div>
+                        {/* Estimate time */}
+                        <p className="text-gray-500 dark:text-gray-400">
+                          Estimate Time: {item.product?.time}
+                        </p>
                         {/* Product Price */}
                         <span className="text-gray-800 font-semibold">
                         ₱{(item.price * item.quantity).toFixed(2)}

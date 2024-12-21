@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import productPic from "../../images/462537363_1012187420677657_6941706802130613222_n (1).png";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Button } from "@/components/ui/button";
 
 interface Category {
   _id: string;
@@ -20,6 +21,7 @@ interface Product {
   category: string;
   createdAt: string;
   updatedAt: string;
+  time: string;
 }
 
 interface CartItem {
@@ -44,6 +46,7 @@ interface ApiResponse {
 const ShoppingCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // Popup visibility state
   const navigate = useNavigate();
   const token = localStorage.getItem("userToken");
 
@@ -84,6 +87,10 @@ const ShoppingCart = () => {
   };
 
   const checkout = async () => {
+    setIsPopupOpen(true); // Open confirmation popup
+  };
+
+  const confirmCheckout = async () => {
     try {
       const payload = { selectedItems };
       const response = await dataFetch("user/order/placeOrder", "POST", payload, token!) as { success: boolean };
@@ -116,6 +123,11 @@ const ShoppingCart = () => {
         theme: "colored",
       });
     }
+    setIsPopupOpen(false); // Close the confirmation popup
+  };
+
+  const cancelCheckout = () => {
+    setIsPopupOpen(false); // Close the popup if canceled
   };
 
   const onIncrease = (item: CartItem) => {
@@ -184,6 +196,9 @@ const ShoppingCart = () => {
                           className="text-base font-medium ml-2 text-gray-900 hover:underline dark:text-white"
                         >
                           {item.product?.name}
+                          <p className="text-gray-500 dark:text-gray-400">
+                            Estimate Time: {item.product?.time}
+                          </p>
                         </Link>
                       </div>
                       <div className="flex items-center justify-between md:order-3 md:justify-end">
@@ -257,15 +272,40 @@ const ShoppingCart = () => {
                 </div>
               </div>
               <button
+                disabled={selectedItems.length === 0}
                 onClick={checkout}
-                className="w-full rounded-lg bg-black px-6 py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
+                className={`w-full rounded-lg px-6 py-3 text-center text-sm font-semibold uppercase tracking-wide ${selectedItems.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-black'}`}
               >
                 Proceed to Checkout
               </button>
+
             </div>
           </div>
         </div>
       </section>
+      {isPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Are you sure you want to proceed with checkout?
+            </h2>
+            <div className="flex justify-end space-x-4">
+              <Button
+                onClick={cancelCheckout}
+                className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-200"
+              >
+                No
+              </Button>
+              <Button
+                onClick={confirmCheckout}
+                className="px-6 py-2 text-sm transition duration-200"
+              >
+                Yes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );

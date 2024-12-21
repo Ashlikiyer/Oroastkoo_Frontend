@@ -3,7 +3,7 @@ import dataFetch from "@/services/data-services";
 
 interface OrderData {
   id: string | undefined;
-  status: string;
+  orderStatus: string;
 }
 
 interface EditOrderProps {
@@ -18,7 +18,7 @@ interface ResponseData {
 }
 
 const EditOrder = ({ order, onClose }: EditOrderProps) => {
-  const [status, setStatus] = useState(order.status);
+  const [status, setStatus] = useState(order.orderStatus);
 
   const updateOrderStatus = async () => {
     if (!order.id) {
@@ -60,10 +60,11 @@ const EditOrder = ({ order, onClose }: EditOrderProps) => {
             onChange={(e) => setStatus(e.target.value)}
             className="border border-gray-300 rounded-lg px-3 py-2 w-full"
           >
-            <option value="Pending">Pending</option>
-            <option value="Order Confirmed">Order Confirmed</option>
-            <option value="Preparing">Preparing</option>
-            <option value="Received">Received</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="order confirmed">Order Confirmed</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready for pick-up">Ready for Pick-Up</option>
+            <option value="received">Received</option>
           </select>
         </div>
         <div className="flex justify-end space-x-4">

@@ -18,6 +18,7 @@ interface Product {
   price: number;
   image?: string;
   category: Category;
+  time: string;
 }
 
 const Product = () => {
@@ -153,6 +154,9 @@ const Product = () => {
                 <h2 className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                   {product.name}
                 </h2>
+                <p className="text-gray-500 dark:text-gray-400">
+                          Estimate Time: {product.time}
+                </p>
                 <div className="mt-3 flex items-center justify-between">
                   <p className="text-xl font-bold text-gray-900 dark:text-white">
                   ₱{product.price.toFixed(2)}
