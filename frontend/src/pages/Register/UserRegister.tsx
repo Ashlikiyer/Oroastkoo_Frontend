@@ -17,6 +17,7 @@ const UserRegister = () => {
   const [username, setUsername] = useState(""); // Changed name to username
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
 
   const RegisteredUser = async () => {
     const data = { username, email, password }; // Payload structure matches the backend
@@ -62,6 +63,18 @@ const UserRegister = () => {
               id="username"
               placeholder="Kier"
               required
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="contactNumber">Contact Number</Label>
+            <Input
+              value={contactNumber}
+              onChange={(e) => setContactNumber(e.target.value.replace(/[^0-9]/g, ''))} 
+              type="tel" 
+              id="contactNumber"
+              placeholder="09xxxxxxxxx"
+              required
+              maxLength={11}
             />
           </div>
           <div className="grid gap-2">

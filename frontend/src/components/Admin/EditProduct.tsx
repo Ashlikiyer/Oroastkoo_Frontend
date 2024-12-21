@@ -16,6 +16,7 @@ interface EditProductProps {
     category: Category;
     price: number;
     image?: string | null; // Updated to match image URL type
+    time: string;
   };
   onSave: (updatedProduct: {
     _id: string;
@@ -23,6 +24,7 @@ interface EditProductProps {
     category: Category;
     price: number;
     image: string | null;
+    time: string;
   }) => void;
 }
 
@@ -37,6 +39,7 @@ const EditProduct: React.FC<EditProductProps> = ({
   const [image, setImage] = useState<string | null>(productData.image || null); // Updated to handle image URL
   const [categories, setCategories] = useState<any[]>([]); // For fetched categories
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false); // State to control ImageManager visibility
+  const [time, setTime] = useState<string>(productData.time); // State for cooking time
 
   useEffect(() => {
     setProductName(productData.name);
@@ -91,6 +94,7 @@ const EditProduct: React.FC<EditProductProps> = ({
     const updatedProduct = {
       _id: productData._id,
       name: productName,
+      time,
       category: selectedCategory._id, // Pass the entire Category object
       price,
       image,
@@ -173,6 +177,19 @@ const EditProduct: React.FC<EditProductProps> = ({
                   placeholder="₱0.00"
                   value={price}
                   onChange={(e) => setPrice(Number(e.target.value))}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Cooking Time
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-3 border rounded-lg bg-gray-50 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
+                  placeholder="00:00:00"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
                   required
                 />
               </div>

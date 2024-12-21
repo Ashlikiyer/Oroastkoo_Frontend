@@ -74,7 +74,7 @@ const App = () => {
           }
         />
         <Route
-          path="/Orders"
+          path="/Checkout"
           element={
             <PrivateRoute>
               <Checkout />

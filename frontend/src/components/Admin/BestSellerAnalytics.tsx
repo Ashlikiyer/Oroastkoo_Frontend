@@ -1,9 +1,8 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis, Tooltip, ResponsiveContainer } from "recharts"
-import { useEffect, useState } from "react"
-import dataFetch from "@/services/data-services"
+import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from "react";
+import dataFetch from "@/services/data-services";
 import {
   Card,
   CardContent,
@@ -11,24 +10,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/card";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export function BestSellerAnalytics() {
   const [bestSeller, setBestSeller] = useState<any>([]);
@@ -41,7 +31,6 @@ export function BestSellerAnalytics() {
       } else {
         console.error("Unexpected response format:", response);
       }
-      console.log("Best Seller data:", response);
     } catch (error) {
       console.error("Error fetching best seller data:", error);
     }
@@ -62,16 +51,18 @@ export function BestSellerAnalytics() {
     image: item.product?.image || "/default-image.jpg", // Fallback image URL
   }));
 
-  console.log(chartData); // Log the chart data
-
-  // Custom Tooltip Content
+  // Custom Tooltip with Product Image
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const { name, totalSold, price, image } = payload[0].payload;
       return (
         <div className="custom-tooltip p-2 bg-white border rounded shadow-lg">
-          <h4>{name}</h4>
-          <img src={image} alt={name} className="w-20 h-20 object-cover mb-2" />
+          <h4 className="font-bold">{name}</h4>
+          <img
+            src={image}
+            alt={name}
+            className="w-20 h-20 object-cover my-2"
+          />
           <p>Sold: {totalSold}</p>
           <p>Price: ₱{price}</p>
         </div>
@@ -82,7 +73,7 @@ export function BestSellerAnalytics() {
 
   return (
     <div className="bg-blue-50 min-h-screen p-2 sm:p-20">
-      <div className="max-w-5xl mt-14">
+      <div className="max-w-5xl mt-4">
         <Card>
           <CardHeader>
             <CardTitle>Best Seller Products</CardTitle>
@@ -91,18 +82,24 @@ export function BestSellerAnalytics() {
           <CardContent>
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height={400}>
-                <AreaChart data={chartData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area
-                    dataKey="totalSold"
-                    type="natural"
-                    fill="var(--color-desktop)"
-                    fillOpacity={0.4}
-                    stroke="var(--color-desktop)"
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{
+                    left: 20,
+                  }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
                   />
-                </AreaChart>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="totalSold" fill="var(--color-desktop)" radius={5} />
+                </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
