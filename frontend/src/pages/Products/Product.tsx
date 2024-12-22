@@ -189,10 +189,28 @@ const Product = () => {
                 </div>
                 <button
                   onClick={() => addToCart(product._id, quantities[product._id] || 1)}
-                  className="ml-[30%] mt-4 rounded-sm bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-black"
+                  disabled={
+                    !product.quantity || (quantities[product._id] || 1) > product.quantity
+                  }
+                  className={`ml-[30%] mt-4 rounded-sm px-3 py-1 text-xs font-medium text-white transition ${
+                    !product.quantity || (quantities[product._id] || 1) > product.quantity
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:bg-black"
+                  }`}
                 >
-                  Add to Tray
+                  {!product.quantity ? "Out of Stock" : "Add to Tray"}
                 </button>
+                {/* Out of Stock Image */}
+                {product.quantity === 0 && (
+                  <div className="mt-4 flex justify-center">
+                    <img
+                      src="/path-to-out-of-stock-image.png"
+                      alt="Out of Stock"
+                      className="h-16 w-16"
+                    />
+                  </div>
+                )}
+
                 <p className="mt-2 text-sm text-gray-600">Quantity: {quantities[product._id] || 1}</p>
               </div>
             </div>

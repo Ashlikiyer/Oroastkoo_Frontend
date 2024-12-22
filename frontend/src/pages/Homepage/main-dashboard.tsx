@@ -253,7 +253,7 @@ const Home = () => {
                           <p className="text-xl font-bold text-gray-900 dark:text-white">
                             ₱{product.price.toFixed(2)}
                           </p>
-                          <p className="text-md font-bold text-gray-500 dark:text-white">
+                          <p className="text-md font-bold text-gray-500    dark:text-white">
                             Stock: {product.quantity}
                           </p>
                           
@@ -284,13 +284,29 @@ const Home = () => {
                           </div>
                         </div>
                         <button
-                          onClick={() =>
-                            addToCart(product._id, quantities[product._id] || 1)
+                          onClick={() => addToCart(product._id, quantities[product._id] || 1)}
+                          disabled={
+                            !product.quantity || (quantities[product._id] || 1) > product.quantity
                           }
-                          className="mt-4 rounded-sm bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-black"
+                          className={`mt-4 rounded-sm px-3 py-1 text-xs font-medium text-white transition ${
+                            !product.quantity || (quantities[product._id] || 1) > product.quantity
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-black hover:bg-black"
+                          }`}
                         >
-                          Add to Tray
+                          {!product.quantity ? "Out of Stock" : "Add to Tray"}
                         </button>
+                        {/* Out of Stock Image */}
+                        {product.quantity === 0 && (
+                          <div className="mt-4 flex justify-center">
+                            <img
+                              src="/path-to-out-of-stock-image.png"
+                              alt="Out of Stock"
+                              className="h-16 w-16"
+                            />
+                          </div>
+                        )}
+
                         {/* Displaying Quantity at the Bottom */}
                         <p className="mt-2 text-sm text-gray-600">
                           Quantity: {quantities[product._id] || 1}
