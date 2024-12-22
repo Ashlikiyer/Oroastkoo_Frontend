@@ -20,6 +20,7 @@ interface ProductData {
   image?: string | null; // Optional image URL field
   category: Category,
   time: string;
+  quantity: number;
 }
 
 const ProductAdmin = () => {
@@ -164,6 +165,7 @@ const ProductAdmin = () => {
                       <th className="px-6 py-3 text-left">Product Name</th>
                       <th className="px-6 py-3 text-left">Category</th>
                       <th className="px-6 py-3 text-left">Price</th>
+                      <th className="px-6 py-3 text-left">Quantity</th>
                       <th className="px-6 py-3 text-left">Estimate Time</th>
                       <th className="px-6 py-3 text-center">Actions</th>
                     </tr>
@@ -187,6 +189,7 @@ const ProductAdmin = () => {
                           <td className="px-6 py-4">{product.name}</td>
                           <td className="px-6 py-4">{product.category?.categoryName || "Category"}</td>
                           <td className="px-6 py-4">₱{product.price.toFixed(2)}</td>
+                          <td className="px-6 py-4">{product.quantity}</td>
                           <td className="px-6 py-4">{product.time}</td>
                           <td className="px-6 py-4 text-center">
                             <button onClick={() => toggleEditModal(product)} className="text-green-500">

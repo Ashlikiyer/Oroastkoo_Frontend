@@ -19,6 +19,7 @@ interface Product {
   image?: string;
   category: Category;
   time: string;
+  quantity: number;
 }
 
 const Product = () => {
@@ -158,9 +159,15 @@ const Product = () => {
                           Estimate Time: {product.time}
                 </p>
                 <div className="mt-3 flex items-center justify-between">
-                  <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  ₱{product.price.toFixed(2)}
-                  </p>
+                <div className="flex flex-col">
+                          <p className="text-xl font-bold text-gray-900 dark:text-white">
+                            ₱{product.price.toFixed(2)}
+                          </p>
+                          <p className="text-md font-bold text-gray-500 dark:text-white">
+                            Stock: {product.quantity}
+                          </p>
+                          
+                          </div>
                   <div className="flex items-center">
                     {/* Decrease button */}
                     <button
