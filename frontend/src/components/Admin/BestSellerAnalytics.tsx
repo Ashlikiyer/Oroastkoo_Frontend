@@ -72,8 +72,8 @@ export function BestSellerAnalytics() {
   };
 
   return (
-    <div className="bg-blue-50 min-h-screen p-2 sm:p-20">
-      <div className="max-w-5xl mt-4">
+    <div className="bg-blue-50 min-h-screen sm:p-20">
+      <div className="max-w-5xl">
         <Card>
           <CardHeader>
             <CardTitle>Best Seller Products</CardTitle>

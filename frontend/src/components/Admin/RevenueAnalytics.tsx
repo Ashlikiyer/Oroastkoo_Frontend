@@ -71,7 +71,7 @@ export function RevenueAnalytics() {
   };
 
   return (
-    <div className="bg-blue-50 min-h-screen ml-28 p-2 mt-4 sm:p-20">
+    <div className="bg-blue-50 min-h-screen ml-28 sm:p-20">
       <div className="max-w-2xl mx-auto">
         {/* Statistics Section */}
         <div className="grid grid-cols-2 gap-4 mb-6">
